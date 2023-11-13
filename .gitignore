@@ -9,3 +9,4 @@ sites-config/features.json
 .yextrc
 
 .DS_Store
+.env
