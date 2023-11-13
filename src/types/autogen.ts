@@ -1,3 +1,5 @@
+import type { Data } from "@measured/puck";
+
 export interface Address {
   line1?: string;
   line2?: string;
@@ -15,6 +17,8 @@ export interface Locations {
   name: string;
   slug: string;
   address: Address;
+  c_template: any;
+  templateData: Data;
 }
 
 export interface ImageThumbnail {
@@ -56,22 +60,4 @@ export interface FinPro {
   id: string;
   name: string;
   slug: string;
-}
-
-export interface BlogStarter_featuredBlogs {
-  id?: string;
-  name?: string;
-  slug?: string;
-  blogStarter_coverPhoto?: ComplexImage;
-  blogStarter_description?: string;
-  datePosted?: string;
-  blogStarter_blogAuthor?: string;
-  c_premium?: boolean;
-}
-
-export interface Home {
-  name: string;
-  slug: string;
-  blogStarter_coverPhoto: ComplexImage;
-  blogStarter_featuredBlogs: BlogStarter_featuredBlogs[];
 }

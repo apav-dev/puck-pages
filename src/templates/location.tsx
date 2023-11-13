@@ -1,7 +1,6 @@
 import {
   GetHeadConfig,
   GetPath,
-  GetRedirects,
   HeadConfig,
   Template,
   TemplateConfig,
@@ -10,18 +9,16 @@ import {
 } from "@yext/pages";
 import "../index.css";
 import { Locations as LocationsType } from "../types/autogen";
+import { Render } from "@measured/puck";
+import { config as puckConfig } from "../../puck.config";
 
 export const config: TemplateConfig = {
   stream: {
     $id: "locations",
-    // Specifies the exact data that each generated document will contain. This data is passed in
-    // directly as props to the default exported function.
-    fields: ["id", "name", "slug", "address"],
-    // Defines the scope of entities that qualify for this stream.
+    fields: ["id", "name", "slug", "address", "c_template"],
     filter: {
       entityTypes: ["location"],
     },
-    // The entity language profiles that documents will be generated for.
     localization: {
       locales: ["en"],
     },
@@ -30,10 +27,6 @@ export const config: TemplateConfig = {
 
 export const getPath: GetPath<TemplateProps> = ({ document }) => {
   return document.slug ?? document.name;
-};
-
-export const getRedirects: GetRedirects<TemplateProps> = ({ document }) => {
-  return [`index-old/${document.id.toString()}`];
 };
 
 export const getHeadConfig: GetHeadConfig<TemplateRenderProps> = ({
@@ -58,16 +51,28 @@ export const getHeadConfig: GetHeadConfig<TemplateRenderProps> = ({
   };
 };
 
+export const transformProps = async (
+  data: TemplateRenderProps<LocationsType>
+) => {
+  const { document } = data;
+
+  const response = await fetch(document.c_template.url);
+  const templateData = await response.json();
+
+  return {
+    ...data,
+    document: { ...data.document, templateData: templateData },
+  };
+};
+
 const Locations: Template<TemplateRenderProps<LocationsType>> = ({
   document,
 }) => {
-  const { name } = document;
+  const { name, templateData } = document;
 
   return (
     <>
-      <img src={"public/locations/assets/logo.png"} alt="Yext Logo" />
-      <h1>Entity Powered Page for Location entities</h1>
-      <div>Entity Name: {name}</div>
+      <Render config={puckConfig} data={templateData} />
     </>
   );
 };

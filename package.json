@@ -25,6 +25,8 @@
     "@auth0/auth0-react": "^2.2.3",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
+    "@measured/puck": "^0.11.2",
+    "@tanstack/react-query": "^5.8.2",
     "@yext/sites-components": "^1.0.0-rc.5",
     "clsx": "^1.2.1",
     "cva": "npm:class-variance-authority@^0.7.0",
