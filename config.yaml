@@ -1,63 +1,11 @@
 buildConfiguration:
-  buildCommand: npm run build:local
+  buildCommand: npm run build
   installDependenciesStep:
-    command: npm install
-    requiredFiles:
-      - package.json
-      - package-lock.json
-      - .npmrc
+   command: npm install
+   requiredFiles:
+     - package.json
+     - package-lock.json
+     - .npmrc
+
 livePreviewConfiguration:
-  setupCommand: ":"
-
-# The site stream allows for specification of site entity whose data will be injected to all
-# generation contexts under the `_site` property.
-siteStream:
-  id: site-stream
-  entityId: SITE_ENTITY_ID
-  fields:
-    - logo
-  localization:
-    locales:
-      - en
-
-# responseHeaders:
-#   - pathPattern: .*
-#     headerKey: joe-custom-header
-#     headerValues:
-#       - joe-custom-value
-
-# Static redirects can establish redirects from individual source paths to individual destination paths.
-staticRedirects:
-  - from: /redirect-to-aarons-store
-    to: /locations/en/aarons-store
-    status: 301
-  # static rewrite
-  - from: /blogs/les
-    to: /blogs/lower-east-side
-    status: 200
-# Dynamic redirects can establish redirect groups based on pattern matching.
-dynamicRedirects:
-  - from: /articles/*
-    to: /blogz/:splat
-    status: 302
-  # dynamic rewrite
-  - from: /blogz/*
-    to: /blogs/:splat
-    status: 200
-
-# The sitemap configuration allows for customization or disabling of automated sitemap generation.
-# sitemap:
-#   excludeList:
-#     - /blogs/*
-#   fileName: fancy-sitemap.xml
-#   disableSitemapGeneration: true
-
-# The authentication configuration allows for usage of a site-level or page-level authentication policy.
-authentication:
-  policyName: blogs-policy2
-  includePaths: # the paths which should be included in the auth policy
-    - /blogs/soho
-
-# The serving configuration allows for specification of a reverse proxy domain.
-# serving:
-#   reverseProxyDomain: https://strong-daffodil-0d9a4c.netlify.app/locations
+  serveCommand: "npm run dev -- --port 8080"

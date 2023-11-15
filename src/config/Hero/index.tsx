@@ -1,16 +1,19 @@
-/* eslint-disable @next/next/no-img-element */
-import React, { useState } from "react";
+import { useState } from "react";
 import { ComponentConfig } from "@measured/puck";
 import { Button } from "@measured/puck";
 import { Section } from "../Section";
 import styles from "./styles.module.css";
-import { getClassNameFactory } from "../../utils";
-import { quotes } from "./quotes";
+import {
+  getClassNameFactory,
+  getFieldValues,
+  getValueByPath,
+} from "../../utils";
+import { LocationContent, YextResponse } from "../../types/api";
 
 const getClassName = getClassNameFactory("Hero", styles);
 
 export type HeroProps = {
-  quote?: { index: number; label: string };
+  entityTitleField?: { fieldId: string; value: string };
   title: string;
   description: string;
   align?: string;
@@ -27,19 +30,22 @@ export type HeroProps = {
 
 export const Hero: ComponentConfig<HeroProps> = {
   fields: {
-    quote: {
+    entityTitleField: {
+      label: "Entity Title Field",
       type: "external",
-      placeholder: "Select a quote",
-      fetchList: async () =>
-        quotes.map((quote, idx) => ({
-          index: idx,
-          title: quote.author,
-          description: quote.content,
-        })),
-      mapProp: (result) => {
-        return { index: result.index, label: result.description };
+      placeholder: "Title",
+      fetchList: async () => {
+        const response = await fetch(
+          "https://cdn.yextapis.com/v2/accounts/me/content/locations?api_key=019e92416a654ffef9d7f87bb54e889d&v=20231112&id=aarons-store"
+        );
+        const locationResponse: YextResponse<LocationContent> =
+          await response.json();
+        const location = locationResponse.response.docs?.[0];
+        const stringFieldValues = getFieldValues(location, "string");
+
+        return stringFieldValues;
       },
-      getItemSummary: (item) => item.label,
+      getItemSummary: (item) => item?.fieldId || "Select a Field Value",
     },
     title: { type: "text" },
     description: { type: "textarea" },
@@ -93,27 +99,33 @@ export const Hero: ComponentConfig<HeroProps> = {
    * For example, requesting a third-party API for the latest content.
    */
   resolveData: async ({ props }, { changed }) => {
-    if (!props.quote)
+    if (!props.entityTitleField)
       return { props, readOnly: { title: false, description: false } };
 
-    if (!changed.quote) {
+    if (!changed.entityTitleField) {
       return { props };
     }
 
-    // Simulate a delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    const entityStringValues = { name: "Aaron's Store" };
+
+    const response = await fetch(
+      "https://cdn.yextapis.com/v2/accounts/me/content/locations?api_key=019e92416a654ffef9d7f87bb54e889d&v=20231112&id=aarons-store"
+    );
+    const locationResponse: YextResponse<LocationContent> =
+      await response.json();
+    const location = locationResponse.response.docs?.[0];
 
     return {
       props: {
-        title: quotes[props.quote.index].author,
-        description: quotes[props.quote.index].content,
+        title: getValueByPath(location, props.entityTitleField.fieldId),
+        description: "description goes here",
       },
       readOnly: { title: true, description: true },
     };
   },
   render: ({
-    align,
     title,
+    align,
     description,
     buttons,
     padding,
@@ -149,7 +161,7 @@ export const Hero: ComponentConfig<HeroProps> = {
         <div className={getClassName("inner")}>
           <div className={getClassName("content")}>
             <h1>{title}</h1>
-            <p className={getClassName("subtitle")}>{description}</p>
+            {/* <p className={getClassName("subtitle")}>{description}</p> */}
             <div className={getClassName("actions")}>
               {buttons.map((button, i) => (
                 <Button

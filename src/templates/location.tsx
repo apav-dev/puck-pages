@@ -9,13 +9,22 @@ import {
 } from "@yext/pages";
 import "../index.css";
 import { Locations as LocationsType } from "../types/autogen";
-import { Render } from "@measured/puck";
+import { Data, Render } from "@measured/puck";
 import puckConfig from "../config";
+import { injectDocumentValues } from "../utils";
 
 export const config: TemplateConfig = {
   stream: {
     $id: "locations",
-    fields: ["id", "name", "slug", "address", "c_template"],
+    fields: [
+      "id",
+      "name",
+      "slug",
+      "address",
+      "c_template",
+      "yextDisplayCoordinate",
+      "photoGallery",
+    ],
     filter: {
       entityTypes: ["location"],
     },
@@ -51,17 +60,19 @@ export const getHeadConfig: GetHeadConfig<TemplateRenderProps> = ({
   };
 };
 
+// TODO: add deserilization to replace entity references with strings
 export const transformProps = async (
   data: TemplateRenderProps<LocationsType>
 ) => {
   const { document } = data;
 
   const response = await fetch(document.c_template.url);
-  const templateData = await response.json();
+  const templateData: Data = await response.json();
+  const injectedTemplate = injectDocumentValues(document, templateData);
 
   return {
     ...data,
-    document: { ...data.document, templateData: templateData },
+    document: { ...data.document, templateData: injectedTemplate },
   };
 };
 

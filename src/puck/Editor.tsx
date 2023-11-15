@@ -2,7 +2,7 @@ import { Puck } from "@measured/puck";
 import type { Data } from "@measured/puck";
 import "@measured/puck/dist/index.css";
 import { fetch } from "@yext/pages/util";
-import config, { initialData as puckInitialData } from "../config";
+import config from "../config";
 
 export interface EditorProps {
   initialData: Data;
@@ -20,7 +20,5 @@ export const Editor = ({ initialData, entityId }: EditorProps) => {
     });
   };
 
-  return (
-    <Puck config={config} data={puckInitialData} onPublish={handlePublish} />
-  );
+  return <Puck config={config} data={initialData} onPublish={handlePublish} />;
 };

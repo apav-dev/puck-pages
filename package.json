@@ -6,7 +6,7 @@
   "license": "BSD-3-Clause",
   "type": "module",
   "scripts": {
-    "build": "yext pages build",
+    "build": "pages build",
     "dev": "pages dev",
     "prod": "pages prod",
     "fmt": "prettier -w .",
