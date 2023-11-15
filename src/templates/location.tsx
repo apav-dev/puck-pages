@@ -11,7 +11,7 @@ import "../index.css";
 import { Locations as LocationsType } from "../types/autogen";
 import { Data, Render } from "@measured/puck";
 import puckConfig from "../config";
-import { injectDocumentValues } from "../utils";
+import { injectDocumentValues } from "../utils/puck-utils";
 
 export const config: TemplateConfig = {
   stream: {

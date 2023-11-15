@@ -1,7 +1,7 @@
 import { PageContext } from "@yext/pages";
 import { hydrateRoot } from "react-dom/client";
-import { Auth0Provider } from "@auth0/auth0-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 export { render };
 
@@ -12,7 +12,15 @@ const render = async (pageContext: PageContext<any>) => {
   hydrateRoot(
     document.getElementById("reactele"),
     <QueryClientProvider client={queryClient}>
-      <Page {...pageProps} />
+      {/* <Page {...pageProps} /> */}
+      <Router>
+        <Routes>
+          <Route path="/*" element={<Page {...pageProps} />} />
+          {/* <Route path="/edit" element={<EditPage />} /> */}
+          {/* Define other routes here */}
+          {/* You can still pass pageProps to your components if needed */}
+        </Routes>
+      </Router>
     </QueryClientProvider>
   );
 };

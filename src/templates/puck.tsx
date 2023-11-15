@@ -11,7 +11,7 @@ import {
 import { Editor } from "../puck/Editor";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchEntity } from "../utils";
+import { fetchEntity } from "../utils/api";
 
 export const getPath: GetPath<TemplateProps> = ({ document }) => {
   return "puck";

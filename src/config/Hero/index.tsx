@@ -3,15 +3,20 @@ import { ComponentConfig } from "@measured/puck";
 import { Button } from "@measured/puck";
 import { Section } from "../Section";
 import styles from "./styles.module.css";
+import { LocationContent, YextResponse } from "../../types/api";
 import {
   getClassNameFactory,
   getFieldValues,
   getValueByPath,
-} from "../../utils";
-import { LocationContent, YextResponse } from "../../types/api";
+} from "../../utils/puck-utils";
+import { useEditorContext } from "../../utils/useEditorContext";
 
 const getClassName = getClassNameFactory("Hero", styles);
 
+// const { entityId } = useEditorContext();
+
+// TODO: Add support for different locations
+// TODO: Add photo and address fields
 export type HeroProps = {
   entityTitleField?: { fieldId: string; value: string };
   title: string;
@@ -35,8 +40,10 @@ export const Hero: ComponentConfig<HeroProps> = {
       type: "external",
       placeholder: "Title",
       fetchList: async () => {
+        const { entityId } = useEditorContext();
+        // TODO: move to a util
         const response = await fetch(
-          "https://cdn.yextapis.com/v2/accounts/me/content/locations?api_key=019e92416a654ffef9d7f87bb54e889d&v=20231112&id=aarons-store"
+          `https://cdn.yextapis.com/v2/accounts/me/content/locations?api_key=${YEXT_PUBLIC_CONTENT_API_KEY}&v=20231112&id=${entityId}`
         );
         const locationResponse: YextResponse<LocationContent> =
           await response.json();
@@ -106,10 +113,10 @@ export const Hero: ComponentConfig<HeroProps> = {
       return { props };
     }
 
-    const entityStringValues = { name: "Aaron's Store" };
-
+    const { entityId } = useEditorContext();
+    // TODO: move to a util
     const response = await fetch(
-      "https://cdn.yextapis.com/v2/accounts/me/content/locations?api_key=019e92416a654ffef9d7f87bb54e889d&v=20231112&id=aarons-store"
+      `https://cdn.yextapis.com/v2/accounts/me/content/locations?api_key=${YEXT_PUBLIC_CONTENT_API_KEY}&v=20231112&id=${entityId}`
     );
     const locationResponse: YextResponse<LocationContent> =
       await response.json();

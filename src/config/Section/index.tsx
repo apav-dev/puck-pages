@@ -1,6 +1,6 @@
 import { CSSProperties, ReactNode } from "react";
 import styles from "./styles.module.css";
-import { getClassNameFactory } from "../../utils";
+import { getClassNameFactory } from "../../utils/puck-utils";
 
 const getClassName = getClassNameFactory("Section", styles);
 
