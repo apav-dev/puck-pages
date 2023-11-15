@@ -15,8 +15,8 @@ const render = async (pageContext: PageContext<any>) => {
       {/* <Page {...pageProps} /> */}
       <Router>
         <Routes>
+          <Route path="/no-content" element={<h1>Hello from SPA Page!</h1>} />
           <Route path="/*" element={<Page {...pageProps} />} />
-          {/* <Route path="/edit" element={<EditPage />} /> */}
           {/* Define other routes here */}
           {/* You can still pass pageProps to your components if needed */}
         </Routes>
