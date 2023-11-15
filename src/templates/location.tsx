@@ -66,14 +66,18 @@ export const transformProps = async (
 ) => {
   const { document } = data;
 
-  const response = await fetch(document.c_template.url);
-  const templateData: Data = await response.json();
-  const injectedTemplate = injectDocumentValues(document, templateData);
+  if (document) {
+    const response = await fetch(document.c_template.url);
+    const templateData: Data = await response.json();
+    const injectedTemplate = injectDocumentValues(document, templateData);
 
-  return {
-    ...data,
-    document: { ...data.document, templateData: injectedTemplate },
-  };
+    return {
+      ...data,
+      document: { ...data.document, templateData: injectedTemplate },
+    };
+  } else {
+    return data;
+  }
 };
 
 const Locations: Template<TemplateRenderProps<LocationsType>> = ({
