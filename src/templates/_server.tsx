@@ -11,15 +11,13 @@ const render = async (pageContext: PageContext<any>) => {
   const { Page, pageProps } = pageContext;
   const viewHtml = ReactDOMServer.renderToString(
     <QueryClientProvider client={queryClient}>
-      {/* <Page {...pageProps} /> */}
-      <Router>
+      <Page {...pageProps} />
+      {/* <Router>
         <Routes>
           <Route path="/no-content" element={<h1>Hello from SPA Page!</h1>} />
           <Route path="/*" element={<Page {...pageProps} />} />
-          {/* Define other routes here */}
-          {/* You can still pass pageProps to your components if needed */}
         </Routes>
-      </Router>
+      </Router> */}
     </QueryClientProvider>
   );
   return `<!DOCTYPE html>
