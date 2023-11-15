@@ -17,11 +17,9 @@ export const getPath: GetPath<TemplateProps> = ({ document }) => {
   return "puck";
 };
 
-export const getHeadConfig: GetHeadConfig<TemplateRenderProps> = ({
-  relativePrefixToRoot,
-  path,
-  document,
-}): HeadConfig => {
+export const getHeadConfig: GetHeadConfig<
+  TemplateRenderProps
+> = (): HeadConfig => {
   return {
     title: "Puck Editor",
     charset: "UTF-8",

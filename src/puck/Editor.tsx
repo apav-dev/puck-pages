@@ -1,8 +1,8 @@
 import { Puck } from "@measured/puck";
 import type { Data } from "@measured/puck";
 import "@measured/puck/dist/index.css";
-import config from "../../puck.config";
 import { fetch } from "@yext/pages/util";
+import config, { initialData as puckInitialData } from "../config";
 
 export interface EditorProps {
   initialData: Data;
@@ -10,9 +10,7 @@ export interface EditorProps {
 }
 
 export const Editor = ({ initialData, entityId }: EditorProps) => {
-  console.log("entityId", entityId);
   const handlePublish = async (data: Data) => {
-    console.log("pass template data to entity", data);
     await fetch(`/api/entity/${entityId}`, {
       method: "PUT",
       headers: {
@@ -22,5 +20,7 @@ export const Editor = ({ initialData, entityId }: EditorProps) => {
     });
   };
 
-  return <Puck config={config} data={initialData} onPublish={handlePublish} />;
+  return (
+    <Puck config={config} data={puckInitialData} onPublish={handlePublish} />
+  );
 };

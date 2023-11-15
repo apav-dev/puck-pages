@@ -10,7 +10,7 @@ import {
 import "../index.css";
 import { Locations as LocationsType } from "../types/autogen";
 import { Render } from "@measured/puck";
-import { config as puckConfig } from "../../puck.config";
+import puckConfig from "../config";
 
 export const config: TemplateConfig = {
   stream: {
