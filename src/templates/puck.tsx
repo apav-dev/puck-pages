@@ -12,6 +12,7 @@ import { Editor } from "../puck/Editor";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchEntity } from "../utils/api";
+import { getEntityIdFromUrl } from "../utils/getEntityIdFromUrl";
 
 export const getPath: GetPath<TemplateProps> = () => {
   return "puck";
@@ -28,15 +29,11 @@ export const getHeadConfig: GetHeadConfig<
 };
 
 const Puck: Template<TemplateRenderProps> = () => {
-  const [entityId, setEntityId] = useState<string>("");
+  const [entityId, setEntityId] = useState<string | undefined>();
   const [templateData, setTemplateData] = useState<any>();
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const entityIdParam = searchParams.get("entityId");
-    if (entityIdParam) {
-      setEntityId(entityIdParam);
-    }
+    setEntityId(getEntityIdFromUrl());
   }, []);
 
   const { data, isSuccess } = useQuery({
@@ -57,7 +54,7 @@ const Puck: Template<TemplateRenderProps> = () => {
     fetchTemplateData();
   }, [data]);
 
-  if (templateData) {
+  if (templateData && entityId) {
     return <Editor initialData={templateData} entityId={entityId} />;
   } else {
     return <div>Loading...</div>;

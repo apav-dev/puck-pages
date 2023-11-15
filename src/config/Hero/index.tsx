@@ -9,6 +9,7 @@ import {
   getFieldValues,
   getValueByPath,
 } from "../../utils/puck-utils";
+import { getEntityIdFromUrl } from "../../utils/getEntityIdFromUrl";
 
 const getClassName = getClassNameFactory("Hero", styles);
 
@@ -39,9 +40,11 @@ export const Hero: ComponentConfig<HeroProps> = {
       type: "external",
       placeholder: "Title",
       fetchList: async () => {
+        const entityId = getEntityIdFromUrl();
+
         // TODO: move to a util
         const response = await fetch(
-          `https://cdn.yextapis.com/v2/accounts/me/content/locations?api_key=${YEXT_PUBLIC_CONTENT_API_KEY}&v=20231112&id=aarons-store`
+          `https://cdn.yextapis.com/v2/accounts/me/content/locations?api_key=${YEXT_PUBLIC_CONTENT_API_KEY}&v=20231112&id=${entityId}`
         );
         const locationResponse: YextResponse<LocationContent> =
           await response.json();
@@ -111,9 +114,11 @@ export const Hero: ComponentConfig<HeroProps> = {
       return { props };
     }
 
+    const entityId = getEntityIdFromUrl();
+
     // TODO: move to a util
     const response = await fetch(
-      `https://cdn.yextapis.com/v2/accounts/me/content/locations?api_key=${YEXT_PUBLIC_CONTENT_API_KEY}&v=20231112&id=aarons-store`
+      `https://cdn.yextapis.com/v2/accounts/me/content/locations?api_key=${YEXT_PUBLIC_CONTENT_API_KEY}&v=20231112&id=${entityId}`
     );
     const locationResponse: YextResponse<LocationContent> =
       await response.json();
