@@ -11,6 +11,6 @@ livePreviewConfiguration:
   serveCommand: "npm run dev -- --port 8080"
 
 dynamicRedirects:
-  - from: */edit
+  - from: /*/edit
     to: /puck
     status: 200
