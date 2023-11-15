@@ -6,14 +6,9 @@
   "license": "BSD-3-Clause",
   "type": "module",
   "scripts": {
+    "build": "yext pages build",
     "dev": "pages dev",
     "prod": "pages prod",
-    "build:local": "pages build",
-    "build": "yext pages build && yext pages generate-test-data && yext pages render",
-    "build:serve": "npm run build && yext pages serve",
-    "serve": "yext pages serve",
-    "features": "pages generate features",
-    "ci": "pages generate ci",
     "fmt": "prettier -w .",
     "lint": "eslint .",
     "clean": "rm -rf .artifact-output .yext/ dist/ localData sites-rendered-output"

@@ -53,7 +53,6 @@ const Puck: Template<TemplateRenderProps> = () => {
       if (data) {
         const response = await fetch(data.response.docs[0].c_template.url);
         const json = await response.json();
-        debugger;
         setTemplateData(json);
       }
     };
@@ -61,7 +60,7 @@ const Puck: Template<TemplateRenderProps> = () => {
   }, [data]);
 
   if (templateData) {
-    return <Editor initialData={templateData} />;
+    return <Editor initialData={templateData} entityId={entityId} />;
   } else {
     return <div>Loading...</div>;
   }
