@@ -66,18 +66,18 @@ export const transformProps = async (
 ) => {
   const { document } = data;
 
-  if (document) {
-    const response = await fetch(document.c_template.url);
-    const templateData: Data = await response.json();
-    const injectedTemplate = injectDocumentValues(document, templateData);
-
-    return {
-      ...data,
-      document: { ...data.document, templateData: injectedTemplate },
-    };
-  } else {
+  if (!document.c_template) {
     return data;
   }
+
+  const response = await fetch(document.c_template.url);
+  const templateData: Data = await response.json();
+  const injectedTemplate = injectDocumentValues(document, templateData);
+
+  return {
+    ...data,
+    document: { ...data.document, templateData: injectedTemplate },
+  };
 };
 
 const Locations: Template<TemplateRenderProps<LocationsType>> = ({
@@ -85,11 +85,15 @@ const Locations: Template<TemplateRenderProps<LocationsType>> = ({
 }) => {
   const { name, templateData } = document;
 
-  return (
-    <>
-      <Render config={puckConfig} data={templateData} />
-    </>
-  );
+  if (templateData) {
+    return (
+      <>
+        <Render config={puckConfig} data={templateData} />
+      </>
+    );
+  } else {
+    return <h1>No TemplateData</h1>;
+  }
 };
 
 export default Locations;

@@ -17,8 +17,8 @@ export interface Locations {
   name: string;
   slug: string;
   address: Address;
-  c_template: any;
-  templateData: Data;
+  c_template?: any;
+  templateData?: Data;
 }
 
 export interface ImageThumbnail {
