@@ -18,6 +18,7 @@ export type EntityContent = {
       size: string;
       url: string;
     };
+    slug: string;
     id: string;
   }[];
 };
