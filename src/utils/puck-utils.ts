@@ -1,5 +1,6 @@
 import { Content, Data } from "@measured/puck";
 import classnames from "classnames";
+import { fetchLocation } from "./api";
 
 export const getGlobalClassName = (rootClass, options) => {
   if (typeof options === "string") {
@@ -58,22 +59,49 @@ type FieldValue = {
   value: string | number;
 };
 
-export const getFieldValues = (
+const isUrl = (value: string): boolean => {
+  const urlPattern = new RegExp(
+    "^(https?:\\/\\/)?" + // protocol
+      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+      "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+      "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+      "(\\#[-a-z\\d_]*)?$",
+    "i"
+  ); // fragment locator
+  return !!urlPattern.test(value);
+};
+
+export const getFieldValuesList = (
   obj: Record<string, any>,
-  type: "string" | "number"
+  type: "string" | "number" | "url"
 ): FieldValue[] => {
   const result: FieldValue[] = [];
 
-  const traverse = (currentObject: Record<string, any>, path: string) => {
-    for (const key in currentObject) {
-      if (currentObject.hasOwnProperty(key)) {
-        const value = currentObject[key];
-        const newPath = path ? `${path}.${key}` : key;
+  const traverse = (currentObject: any, path: string) => {
+    if (Array.isArray(currentObject)) {
+      currentObject.forEach((item, index) => {
+        traverse(item, `${path}[${index}]`);
+      });
+    } else {
+      for (const key in currentObject) {
+        if (currentObject.hasOwnProperty(key)) {
+          const value = currentObject[key];
+          const newPath = path ? `${path}.${key}` : key;
 
-        if (typeof value === type) {
-          result.push({ fieldId: newPath, value: value });
-        } else if (typeof value === "object" && value !== null) {
-          traverse(value, newPath);
+          if (type === "url" && typeof value === "string" && isUrl(value)) {
+            result.push({ fieldId: newPath, value: value });
+          } else if (
+            type === "string" &&
+            typeof value === "string" &&
+            !isUrl(value)
+          ) {
+            result.push({ fieldId: newPath, value: value });
+          } else if (type === "number" && typeof value === "number") {
+            result.push({ fieldId: newPath, value: value });
+          } else if (typeof value === "object" && value !== null) {
+            traverse(value, newPath);
+          }
         }
       }
     }
@@ -84,14 +112,27 @@ export const getFieldValues = (
 };
 
 export const getValueByPath = (obj: any, path: string): string => {
-  const pathParts = path.split(".");
+  // Function to split path into parts, considering dot notation and array indices
+  const parsePath = (path: string) => {
+    const pathParts = path.split(/\.|\[|\]\.?/).filter(Boolean);
+    return pathParts;
+  };
+
+  const pathParts = parsePath(path);
   let current = obj;
 
   for (const part of pathParts) {
-    if (current[part] === undefined) {
+    if (Array.isArray(current)) {
+      const index = parseInt(part, 10);
+      if (isNaN(index) || index >= current.length) {
+        return ""; // Return an empty string for invalid index
+      }
+      current = current[index];
+    } else if (current[part] === undefined) {
       return ""; // Return an empty string if the path is not found
+    } else {
+      current = current[part];
     }
-    current = current[part];
   }
 
   return current !== null ? String(current) : ""; // Convert to string, handling null values
@@ -139,4 +180,13 @@ export const injectDocumentValues = (
   // }
 
   return newData;
+};
+
+export const getEntityFieldsList = async (
+  entityId: string,
+  fieldType: "string" | "number" | "url"
+) => {
+  const response = await fetchLocation(entityId);
+  const entity = response.response.docs?.[0];
+  return getFieldValuesList(entity, fieldType);
 };

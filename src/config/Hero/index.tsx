@@ -3,19 +3,16 @@ import { ComponentConfig } from "@measured/puck";
 import { Button } from "@measured/puck";
 import { Section } from "../Section";
 import styles from "./styles.module.css";
-import { LocationContent, YextResponse } from "../../types/api";
 import {
   getClassNameFactory,
-  getFieldValues,
+  getEntityFieldsList,
   getValueByPath,
 } from "../../utils/puck-utils";
 import { getEntityIdFromUrl } from "../../utils/getEntityIdFromUrl";
+import { fetchLocation } from "../../utils/api";
 
 const getClassName = getClassNameFactory("Hero", styles);
 
-// const { entityId } = useEditorContext();
-
-// TODO: Add support for different locations
 // TODO: Add photo and address fields
 export type HeroProps = {
   entityTitleField?: { fieldId: string; value: string };
@@ -24,6 +21,7 @@ export type HeroProps = {
   align?: string;
   padding: string;
   imageMode?: "inline" | "background";
+  imageUrlField?: { fieldId: string; value: string };
   imageUrl?: string;
   buttons: {
     label: string;
@@ -42,16 +40,9 @@ export const Hero: ComponentConfig<HeroProps> = {
       fetchList: async () => {
         const entityId = getEntityIdFromUrl();
 
-        // TODO: move to a util
-        const response = await fetch(
-          `https://cdn.yextapis.com/v2/accounts/me/content/locations?api_key=${YEXT_PUBLIC_CONTENT_API_KEY}&v=20231112&id=${entityId}`
-        );
-        const locationResponse: YextResponse<LocationContent> =
-          await response.json();
-        const location = locationResponse.response.docs?.[0];
-        const stringFieldValues = getFieldValues(location, "string");
+        if (!entityId) return [];
 
-        return stringFieldValues;
+        return getEntityFieldsList(entityId, "string");
       },
       getItemSummary: (item) => item?.fieldId || "Select a Field Value",
     },
@@ -78,6 +69,19 @@ export const Hero: ComponentConfig<HeroProps> = {
         { label: "left", value: "left" },
         { label: "center", value: "center" },
       ],
+    },
+    imageUrlField: {
+      label: "Image URL Field",
+      type: "external",
+      placeholder: "Title",
+      fetchList: async () => {
+        const entityId = getEntityIdFromUrl();
+
+        if (!entityId) return [];
+
+        return getEntityFieldsList(entityId, "url");
+      },
+      getItemSummary: (item) => item?.fieldId || "Select a Field Value",
     },
     imageUrl: { type: "text" },
     imageMode: {
@@ -107,29 +111,42 @@ export const Hero: ComponentConfig<HeroProps> = {
    * For example, requesting a third-party API for the latest content.
    */
   resolveData: async ({ props }, { changed }) => {
-    if (!props.entityTitleField)
-      return { props, readOnly: { title: false, description: false } };
-
-    if (!changed.entityTitleField) {
+    // Determine if there's nothing to update
+    if (!changed.entityTitleField && !changed.imageUrlField) {
       return { props };
     }
 
-    const entityId = getEntityIdFromUrl();
+    // Fetch the entity if necessary
+    let entity;
+    if (changed.entityTitleField || changed.imageUrlField) {
+      const entityId = getEntityIdFromUrl();
+      const entityResponse = await fetchLocation(entityId);
+      entity = entityResponse.response.docs?.[0];
+    }
 
-    // TODO: move to a util
-    const response = await fetch(
-      `https://cdn.yextapis.com/v2/accounts/me/content/locations?api_key=${YEXT_PUBLIC_CONTENT_API_KEY}&v=20231112&id=${entityId}`
-    );
-    const locationResponse: YextResponse<LocationContent> =
-      await response.json();
-    const location = locationResponse.response.docs?.[0];
+    // Create a new props object based on the old one
+    const newProps = { ...props };
+
+    // Update title if entityTitleField has changed
+    if (changed.entityTitleField && props.entityTitleField) {
+      newProps.title = getValueByPath(entity, props.entityTitleField.fieldId);
+    }
+
+    // Update imageUrl if imageUrlField has changed
+    if (changed.imageUrlField && props.imageUrlField) {
+      newProps.imageUrl = getValueByPath(entity, props.imageUrlField.fieldId);
+    }
+
+    // Set defaults or other logic for unchanged props
+    newProps.description = newProps.description || "description goes here";
 
     return {
-      props: {
-        title: getValueByPath(location, props.entityTitleField.fieldId),
-        description: "description goes here",
+      props: newProps,
+      readOnly: {
+        title: !!changed.entityTitleField,
+        description: true,
+        imageUrl: !!changed.imageUrlField,
       },
-      readOnly: { title: true, description: true },
     };
   },
   render: ({
