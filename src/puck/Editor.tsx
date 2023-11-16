@@ -29,7 +29,11 @@ export const Editor = ({ initialData, entityId, entitySlug }: EditorProps) => {
         description: `Your changes have been published.`,
         action: (
           <ToastAction altText="Try again" className="hover:bg-slate-100">
-            <a href={entitySlug} target="_blank" rel="noopener noreferrer">
+            <a
+              href={`/${entitySlug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               View Page
             </a>
           </ToastAction>
