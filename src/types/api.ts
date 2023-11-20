@@ -46,3 +46,40 @@ export type LocationContent = {
     id: string;
   }[];
 };
+
+export interface UnsplashSearchParams {
+  query: string;
+  page?: number;
+  perPage?: number;
+  orientation?: "landscape" | "portrait" | "squarish";
+  color?: string;
+  collections?: string[];
+}
+
+export interface UnsplashResponse {
+  total: number;
+  total_pages: number;
+  results: UnsplashPhoto[];
+}
+
+export interface UnsplashPhoto {
+  id: string;
+  urls: {
+    raw: string;
+    full: string;
+    regular: string;
+    small: string;
+    thumb: string;
+  };
+  alt_description?: string;
+  description?: string;
+  user: {
+    name: string;
+    username: string;
+    profile_image: {
+      small: string;
+      medium: string;
+      large: string;
+    };
+  };
+}

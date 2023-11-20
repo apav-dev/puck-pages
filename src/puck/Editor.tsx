@@ -1,10 +1,12 @@
 import { Puck } from "@measured/puck";
 import type { Data } from "@measured/puck";
-import "@measured/puck/dist/index.css";
 import { fetch } from "@yext/pages/util";
 import config from "../config";
 import { useToast } from "../components/useToast";
 import { ToastAction } from "../components/Toast";
+import MyPlugin from "../plugins/Unsplash";
+
+import "@measured/puck/dist/index.css";
 
 export interface EditorProps {
   initialData: Data;
@@ -47,5 +49,12 @@ export const Editor = ({ initialData, entityId, entitySlug }: EditorProps) => {
     }
   };
 
-  return <Puck config={config} data={initialData} onPublish={handlePublish} />;
+  return (
+    <Puck
+      config={config}
+      data={initialData}
+      onPublish={handlePublish}
+      plugins={[MyPlugin]}
+    />
+  );
 };
