@@ -1,5 +1,6 @@
 import {
   EntityContent,
+  ImageAssetResponse,
   UnsplashResponse,
   UnsplashSearchParams,
   YextResponse,
@@ -59,6 +60,14 @@ export const searchPhotos = async (
     }
   );
 
+  const body = await response.json();
+  return body;
+};
+
+export const fetchAssets = async (): Promise<
+  YextResponse<ImageAssetResponse>
+> => {
+  const response = await fetch(`/api/assets`);
   const body = await response.json();
   return body;
 };

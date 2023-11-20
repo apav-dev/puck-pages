@@ -6,11 +6,11 @@ import { searchPhotos } from "../utils/api";
 import { UnsplashSearchParams } from "../types/api";
 import { ScrollArea } from "../components/ScrollArea";
 import { SearchBar } from "../components/SearchBar";
-import { Copy, Sidebar } from "lucide-react";
+import { Copy } from "lucide-react";
 import { SidebarSection } from "../components/SidebarSection";
 
 // using unsplash...could be swapped with a different DAM
-const ImageSelector = () => {
+export const ImageSelector = () => {
   const [unsplashParams, setUnsplashParams] = useState<UnsplashSearchParams>({
     query: "",
     page: 1,

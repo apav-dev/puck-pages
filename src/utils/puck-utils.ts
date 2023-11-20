@@ -72,9 +72,15 @@ const isUrl = (value: string): boolean => {
   return !!urlPattern.test(value);
 };
 
+const isImageUrl = (value: string): boolean => {
+  const imageUrlRegex =
+    /(https?:\/\/a.mktgcdn.com\/p(?<env>-sandbox|-qa|-dev)?\/)(?<uuid>.+)\/(.*)/;
+  return imageUrlRegex.test(value);
+};
+
 export const getFieldValuesList = (
   obj: Record<string, any>,
-  type: "string" | "number" | "url"
+  type: "string" | "number" | "url" | "image url"
 ): FieldValue[] => {
   const result: FieldValue[] = [];
 
@@ -90,6 +96,13 @@ export const getFieldValuesList = (
           const newPath = path ? `${path}.${key}` : key;
 
           if (type === "url" && typeof value === "string" && isUrl(value)) {
+            result.push({ fieldId: newPath, value: value });
+          } else if (
+            type === "image url" &&
+            typeof value === "string" &&
+            isUrl(value) &&
+            isImageUrl(value)
+          ) {
             result.push({ fieldId: newPath, value: value });
           } else if (
             type === "string" &&
@@ -184,7 +197,7 @@ export const injectDocumentValues = (
 
 export const getEntityFieldsList = async (
   entityId: string,
-  fieldType: "string" | "number" | "url"
+  fieldType: "string" | "number" | "url" | "image url"
 ) => {
   const response = await fetchLocation(entityId);
   const entity = response.response.docs?.[0];

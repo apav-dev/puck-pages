@@ -10,6 +10,7 @@ import {
 } from "../../utils/puck-utils";
 import { getEntityIdFromUrl } from "../../utils/getEntityIdFromUrl";
 import { fetchLocation } from "../../utils/api";
+import { ImageSelector } from "../../components/fields/ImageUrlField";
 
 const getClassName = getClassNameFactory("Hero", styles);
 
@@ -21,8 +22,8 @@ export type HeroProps = {
   align?: string;
   padding: string;
   imageMode?: "inline" | "background";
-  imageUrlField?: { fieldId: string; value: string };
-  imageUrl?: string;
+  // imageUrlField?: { fieldId: string; value: string };
+  image?: { fieldId?: string; value: string };
   buttons: {
     label: string;
     href: string;
@@ -70,20 +71,35 @@ export const Hero: ComponentConfig<HeroProps> = {
         { label: "center", value: "center" },
       ],
     },
-    imageUrlField: {
-      label: "Image URL Field",
-      type: "external",
-      placeholder: "Title",
-      fetchList: async () => {
+    // imageUrlField: {
+    //   label: "Image URL Field",
+    //   type: "external",
+    //   placeholder: "Title",
+    //   fetchList: async () => {
+    //     const entityId = getEntityIdFromUrl();
+
+    //     if (!entityId) return [];
+
+    //     return getEntityFieldsList(entityId, "url");
+    //   },
+    //   getItemSummary: (item) => item?.fieldId || "Select a Field Value",
+    // },
+    image: {
+      label: "Image URL",
+      type: "custom",
+      render: ({ field, name, onChange, value }) => {
         const entityId = getEntityIdFromUrl();
-
-        if (!entityId) return [];
-
-        return getEntityFieldsList(entityId, "url");
+        return (
+          <ImageSelector
+            field={field}
+            name={name}
+            onChange={onChange}
+            value={value}
+            entityId={entityId}
+          />
+        );
       },
-      getItemSummary: (item) => item?.fieldId || "Select a Field Value",
     },
-    imageUrl: { type: "text" },
     imageMode: {
       type: "radio",
       options: [
@@ -112,13 +128,13 @@ export const Hero: ComponentConfig<HeroProps> = {
    */
   resolveData: async ({ props }, { changed }) => {
     // Determine if there's nothing to update
-    if (!changed.entityTitleField && !changed.imageUrlField) {
+    if (!changed.entityTitleField) {
       return { props };
     }
 
     // Fetch the entity if necessary
     let entity;
-    if (changed.entityTitleField || changed.imageUrlField) {
+    if (changed.entityTitleField) {
       const entityId = getEntityIdFromUrl();
       const entityResponse = await fetchLocation(entityId);
       entity = entityResponse.response.docs?.[0];
@@ -132,20 +148,15 @@ export const Hero: ComponentConfig<HeroProps> = {
       newProps.title = getValueByPath(entity, props.entityTitleField.fieldId);
     }
 
-    // Update imageUrl if imageUrlField has changed
-    if (changed.imageUrlField && props.imageUrlField) {
-      newProps.imageUrl = getValueByPath(entity, props.imageUrlField.fieldId);
-    }
-
     // Set defaults or other logic for unchanged props
     newProps.description = newProps.description || "description goes here";
 
     return {
       props: newProps,
       readOnly: {
-        title: !!changed.entityTitleField,
+        title: false,
         description: true,
-        imageUrl: !!changed.imageUrlField,
+        // imageUrl: false,
       },
     };
   },
@@ -155,7 +166,7 @@ export const Hero: ComponentConfig<HeroProps> = {
     description,
     buttons,
     padding,
-    imageUrl,
+    image,
     imageMode,
   }) => {
     // Empty state allows us to test that components support hooks
@@ -176,7 +187,7 @@ export const Hero: ComponentConfig<HeroProps> = {
             <div
               className={getClassName("image")}
               style={{
-                backgroundImage: `url("${imageUrl}")`,
+                backgroundImage: `url("${image?.value}")`,
               }}
             ></div>
 
@@ -202,10 +213,10 @@ export const Hero: ComponentConfig<HeroProps> = {
             </div>
           </div>
 
-          {align !== "center" && imageMode !== "background" && imageUrl && (
+          {align !== "center" && imageMode !== "background" && image && (
             <div
               style={{
-                backgroundImage: `url('${imageUrl}')`,
+                backgroundImage: `url('${image.value}')`,
                 backgroundSize: "cover",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center",

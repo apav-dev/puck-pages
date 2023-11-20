@@ -83,3 +83,36 @@ export interface UnsplashPhoto {
     };
   };
 }
+
+export interface ImageAsset {
+  id: string;
+  type: string;
+  name: string;
+  description: string;
+  value: {
+    image: {
+      url: string;
+      width: number;
+      height: number;
+      sourceUrl: string;
+      thumbnails: {
+        url: string;
+        width: number;
+        height: number;
+      }[];
+    };
+  };
+  forEntities: {
+    mappingType: string;
+  };
+  usage: {
+    type: string;
+  }[];
+  owner: number;
+}
+
+// would need to be updated to account for other asset types
+export interface ImageAssetResponse {
+  count: number;
+  assets: ImageAsset[];
+}
