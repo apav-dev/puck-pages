@@ -4,9 +4,10 @@ import { fetch } from "@yext/pages/util";
 import config from "../config";
 import { useToast } from "../components/useToast";
 import { ToastAction } from "../components/Toast";
-import MyPlugin from "../plugins/Unsplash";
+import Unsplash from "../plugins/Unsplash";
 
 import "@measured/puck/dist/index.css";
+import ModifyStreamPlugin from "../plugins/ModifyStream";
 
 export interface EditorProps {
   initialData: Data;
@@ -54,7 +55,7 @@ export const Editor = ({ initialData, entityId, entitySlug }: EditorProps) => {
       config={config}
       data={initialData}
       onPublish={handlePublish}
-      plugins={[MyPlugin]}
+      plugins={[Unsplash, ModifyStreamPlugin]}
     />
   );
 };

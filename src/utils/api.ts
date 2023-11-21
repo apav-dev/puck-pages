@@ -1,4 +1,5 @@
 import {
+  ContentApiCac,
   EntityContent,
   ImageAssetResponse,
   UnsplashResponse,
@@ -68,6 +69,14 @@ export const fetchAssets = async (): Promise<
   YextResponse<ImageAssetResponse>
 > => {
   const response = await fetch(`/api/assets`);
+  const body = await response.json();
+  return body;
+};
+
+export const fetchEndpoint = async (
+  endpointId: string
+): Promise<YextResponse<ContentApiCac>> => {
+  const response = await fetch(`/api/endpoint/${endpointId}`);
   const body = await response.json();
   return body;
 };

@@ -116,3 +116,19 @@ export interface ImageAssetResponse {
   count: number;
   assets: ImageAsset[];
 }
+
+export interface ContentApiCac {
+  $id: string;
+  $schema: string;
+  name: string;
+  stream: {
+    source: string;
+    fields: string[];
+    filter: {
+      entityTypes: string[];
+    };
+  };
+  fieldIndexes: {
+    field: string;
+  }[];
+}
