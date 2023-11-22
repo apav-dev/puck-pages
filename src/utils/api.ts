@@ -7,7 +7,7 @@ import {
   YextResponse,
 } from "../types/api";
 
-export const fetchEntity = async (
+export const fetchEntityTemplateData = async (
   entityId?: string
 ): Promise<YextResponse<EntityContent>> => {
   const response = await fetch(
@@ -77,6 +77,32 @@ export const fetchEndpoint = async (
   endpointId: string
 ): Promise<YextResponse<ContentApiCac>> => {
   const response = await fetch(`/api/endpoint/${endpointId}`);
+  const body = await response.json();
+  return body;
+};
+
+export const fetchEntity = async (entityId: string): Promise<YextResponse> => {
+  const response = await fetch(`/api/entity/${entityId}`);
+  const body = await response.json();
+  return body;
+};
+
+export const updateEndpoint = async (
+  endpointId: string,
+  endpointBody: { fields: { fieldId: string; checked: boolean }[] }
+): Promise<YextResponse> => {
+  const response = await fetch(`/api/endpoint/${endpointId}`, {
+    method: "PATCH",
+    body: JSON.stringify(endpointBody),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.status !== 200) {
+    throw new Error(response.statusText);
+  }
+
   const body = await response.json();
   return body;
 };

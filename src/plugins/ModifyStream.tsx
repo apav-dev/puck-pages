@@ -2,7 +2,7 @@ import { AppState } from "@measured/puck";
 import { ReactNode, useEffect, useState } from "react";
 import { SidebarSection } from "../components/SidebarSection";
 import { useQuery } from "@tanstack/react-query";
-import { fetchEndpoint } from "../utils/api";
+import { fetchEndpoint, fetchEntity, updateEndpoint } from "../utils/api";
 import {
   Dialog,
   DialogContent,
@@ -19,32 +19,23 @@ import {
   TableBody,
   TableCell,
   TableHead,
+  TableHeader,
   TableRow,
 } from "../components/Table";
 import { Checkbox } from "../components/Checkbox";
-
-const fields = [
-  { id: "field1", label: "Field 1" },
-  { id: "field2", label: "Field 2" },
-  // Add more fields as needed
-];
+import { ScrollArea } from "../components/ScrollArea";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckedState } from "@radix-ui/react-checkbox";
+import { Button } from "../components/Button";
+import { useToast } from "../components/useToast";
 
 export const FieldSelector = () => {
   const [endpointId, setEndpointId] = useState<string>("locations");
   const [entityId, setEntityId] = useState<string | undefined>("");
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
 
-  const form = useForm({
-    defaultValues: {
-      fields: fields.reduce(
-        (acc, field) => ({ ...acc, [field.id]: false }),
-        {}
-      ),
-    },
-  });
-
-  const onSubmit = (data) => {
-    console.log(data);
-  };
+  const { toast } = useToast();
 
   useEffect(() => {
     setEntityId(getEntityIdFromUrl());
@@ -53,6 +44,7 @@ export const FieldSelector = () => {
   const endpointQuery = useQuery({
     queryKey: ["endpoint", endpointId],
     retry: false,
+    enabled: !!entityId,
     queryFn: () => fetchEndpoint(endpointId),
   });
 
@@ -60,53 +52,162 @@ export const FieldSelector = () => {
     queryKey: ["entity", entityId],
     retry: false,
     enabled: !!entityId,
-    queryFn: () => fetchEndpoint(endpointId),
+    queryFn: () => fetchEntity(entityId),
   });
+
+  const resetForm = () => {
+    const fieldsList = Object.entries(entityQuery.data?.response).map(
+      ([k, v]) => ({
+        fieldId: k,
+        checked:
+          endpointQuery.data?.response.stream.fields.includes(k) ?? false,
+      })
+    );
+
+    // Sort the fields list so that checked fields appear first
+    const sortedFieldsList = [...fieldsList].sort((a, b) => {
+      if (a.checked && !b.checked) {
+        return -1;
+      } else if (!a.checked && b.checked) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+
+    form.setValue("fields", sortedFieldsList);
+  };
+
+  useEffect(() => {
+    if (entityQuery.isSuccess) {
+      resetForm();
+    }
+  }, [entityQuery.data, entityQuery.status]);
+
+  const formSchema = z.object({
+    fields: z.array(
+      z.object({
+        fieldId: z.string(),
+        checked: z.boolean(),
+      })
+    ),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      fields: [],
+    },
+  });
+
+  const handleCheckedChange = (
+    field: {
+      fieldId: string;
+      checked: boolean;
+    },
+    cs: CheckedState
+  ) => {
+    const updatedFields = form.getValues("fields").map((f) => {
+      if (f.fieldId === field.fieldId) {
+        return {
+          ...f,
+          checked: cs === true ? true : false,
+        };
+      }
+      return f;
+    });
+    form.setValue("fields", updatedFields);
+  };
+
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    setDialogOpen(false);
+    try {
+      await updateEndpoint(endpointId, values);
+      toast({
+        title: "Success",
+        description: `Stream updated successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong. Failed to update stream.",
+      });
+    }
+  };
+
+  const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setDialogOpen(false);
+    resetForm();
+  };
 
   return (
     <SidebarSection title="Modify Stream" noPadding>
-      <Dialog>
-        <DialogTrigger className="p-4">Open</DialogTrigger>
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          setDialogOpen(open);
+          setTimeout(() => {
+            if (!open) {
+              resetForm();
+            }
+          }, 500);
+        }}
+      >
+        <DialogTrigger onClick={() => setDialogOpen(true)} className="p-4">
+          Open
+        </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+            <DialogTitle>Locations Stream</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
+              Add addition fields from location entities to the stream.
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <Table>
-                <TableHead>
+            <form onSubmit={form.handleSubmit(handleSubmit)}>
+              <Table className="table-fixed w-full">
+                <TableHeader>
                   <TableRow>
-                    <TableCell>Enabled</TableCell>
-                    <TableCell>Field ID</TableCell>
+                    <TableHead className="w-[100px]">Enabled</TableHead>
+                    <TableHead>Field Id</TableHead>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {fields.map((field) => (
-                    <TableRow key={field.id}>
-                      <TableCell>
-                        <FormField
-                          control={form.control}
-                          name={`fields.${field.id}`}
-                          render={({ field }) => (
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                          )}
-                        />
-                      </TableCell>
-                      <TableCell>{field.label}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+                </TableHeader>
               </Table>
-              <button type="submit">Submit</button>
+              <ScrollArea className="h-[350px] border-l border-b border-r">
+                <Table className="table-fixed w-full">
+                  <TableBody>
+                    <FormField
+                      control={form.control}
+                      name={"fields"}
+                      render={({ field }) => {
+                        return (
+                          <>
+                            {field.value.map((f, i) => (
+                              <TableRow key={f.fieldId}>
+                                <TableCell className="w-[100px]">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={f.checked}
+                                      onCheckedChange={(cs) =>
+                                        handleCheckedChange(f, cs)
+                                      }
+                                    />
+                                  </FormControl>
+                                </TableCell>
+                                <TableCell>{f.fieldId}</TableCell>
+                              </TableRow>
+                            ))}
+                          </>
+                        );
+                      }}
+                    />
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+              <Button className="my-4" type="submit">
+                Submit
+              </Button>
             </form>
           </Form>
         </DialogContent>

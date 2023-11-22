@@ -1,26 +1,13 @@
-// https://api.yextapis.com/v2/accounts/me/config/resources/streams/streams-endpoint/locations?api_key={{api_key}}&v={{v}}
-// {
-//   "$id": "locations",
-//   "$schema": "https://schema.yext.com/config/streams/streams-endpoint/v2",
-//   "name": "Locations",
-//   "stream": {
-//       "source": "content",
-//       "fields": [
-//           "id",
-//           "name",
-//           "address",
-//           "yextDisplayCoordinate",
-//           "photoGallery"
-//       ],
-//       "filter": {
-//           "entityTypes": [
-//               "location"
-//           ]
-//       }
-//   }
-// }
 import { SitesHttpRequest, SitesHttpResponse } from "@yext/pages/*";
 import { fetch } from "@yext/pages/util";
+import * as z from "zod";
+
+const contentEndpointPatchReq = {
+  stream: {
+    source: "content",
+    fields: [],
+  },
+};
 
 export default async function endpoint(
   request: SitesHttpRequest
@@ -34,12 +21,40 @@ export default async function endpoint(
   switch (method) {
     case "GET":
       return getEndpoint(pathParams.id);
-    case "PUT":
+    // TODO: update to patch endpoint based on the fieldId that is passed in
+    case "PATCH":
       if (!body) {
         return { body: "Missing entity body", headers: {}, statusCode: 400 };
       }
       const bodyObj = JSON.parse(body);
-      return updateEndpoint(pathParams.id, bodyObj);
+      if (validRequestBody(bodyObj) === false) {
+        console.error("Invalid request body:", bodyObj);
+        return { body: "Invalid request body", headers: {}, statusCode: 400 };
+      }
+
+      const checkedFields = (
+        bodyObj.fields as { fieldId: string; checked: boolean }[]
+      ).reduce((acc: string[], field) => {
+        if (field.checked) {
+          acc.push(field.fieldId);
+        }
+        return acc;
+      }, []);
+
+      // always include id field or the CaC API will throw an error
+      if (!checkedFields.includes("id")) {
+        checkedFields.push("id");
+      }
+
+      const patchReq = {
+        ...contentEndpointPatchReq,
+        stream: {
+          ...contentEndpointPatchReq.stream,
+          fields: checkedFields,
+        },
+      };
+
+      return updateEndpoint(pathParams.id, patchReq);
     default:
       return { body: "Method not allowed", headers: {}, statusCode: 405 };
   }
@@ -73,8 +88,8 @@ const getEndpoint = async (endpointId?: string): Promise<SitesHttpResponse> => {
 };
 
 const updateEndpoint = async (
-  endpointId?: string,
-  endpointBody?: Record<string, any>
+  endpointId: string,
+  endpointBody: Record<string, any>
 ): Promise<SitesHttpResponse> => {
   if (!endpointId) {
     return { body: "Missing endpoint id", headers: {}, statusCode: 400 };
@@ -87,13 +102,16 @@ const updateEndpoint = async (
     {
       method: "PATCH",
       body: JSON.stringify(endpointBody),
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
   );
 
   const resp = await cacApiResp.json();
 
   if (cacApiResp.status !== 200) {
-    console.error("Error updating endpoint:", resp);
+    console.error("Error updating endpoint:", resp.meta.errors);
     return {
       body: JSON.stringify(resp),
       headers: {},
@@ -105,5 +123,24 @@ const updateEndpoint = async (
       headers: {},
       statusCode: 200,
     };
+  }
+};
+
+const validRequestBody = (body: any): boolean => {
+  const schema = z.object({
+    fields: z.array(
+      z.object({
+        fieldId: z.string(),
+        checked: z.boolean(),
+      })
+    ),
+  });
+
+  try {
+    schema.parse(body);
+    return true;
+  } catch (error) {
+    console.error("Invalid request body:", error);
+    return false;
   }
 };

@@ -1,4 +1,4 @@
-export interface YextResponse<T> {
+export interface YextResponse<T = any> {
   meta: {
     uuid: string;
     errors?: any[];
