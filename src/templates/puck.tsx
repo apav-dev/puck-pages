@@ -11,7 +11,7 @@ import {
 import { Editor } from "../puck/Editor";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchEntity } from "../utils/api";
+import { fetchEntityTemplateData } from "../utils/api";
 import { getEntityIdFromUrl } from "../utils/getEntityIdFromUrl";
 import { Toaster } from "../components/Toaster";
 
@@ -41,7 +41,7 @@ const Puck: Template<TemplateRenderProps> = () => {
   const { data, isSuccess } = useQuery({
     queryKey: ["entityId", entityId],
     retry: false,
-    queryFn: () => fetchEntity(entityId),
+    queryFn: () => fetchEntityTemplateData(entityId),
     enabled: entityId !== "",
   });
 

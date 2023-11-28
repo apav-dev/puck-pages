@@ -1,5 +1,4 @@
 import { SitesHttpRequest, SitesHttpResponse } from "@yext/pages/*";
-import { fetch } from "@yext/pages/util";
 
 const CLOUDFLARE_WORKER_URL = "https://temp-storage.ajpavlick.workers.dev";
 
@@ -13,6 +12,8 @@ export default async function entity(
   }
 
   switch (method) {
+    case "GET":
+      return getEntity(pathParams.id);
     case "PUT":
       if (!body) {
         return { body: "Missing entity body", headers: {}, statusCode: 400 };
@@ -23,6 +24,38 @@ export default async function entity(
       return { body: "Method not allowed", headers: {}, statusCode: 405 };
   }
 }
+
+const getEntity = async (entityId?: string): Promise<SitesHttpResponse> => {
+  if (!entityId) {
+    return { body: "Missing entity id", headers: {}, statusCode: 400 };
+  }
+
+  const mgmtApiResp = await fetch(
+    `https://api.yextapis.com/v2/accounts/me/entities/${entityId}?api_key=${YEXT_PUBLIC_API_KEY}&v=20230901`
+  );
+
+  const resp = await mgmtApiResp.json();
+
+  if (mgmtApiResp.status !== 200) {
+    console.error("Error fetching entity:", resp);
+    return {
+      body: JSON.stringify(resp),
+      headers: {},
+      statusCode: mgmtApiResp.status,
+    };
+  } else {
+    const { response } = resp;
+    const { c_template, slug, meta, ...rest } = response;
+
+    // excluding c_template and slug from the response and pulling id out of meta
+    const updatedResp = { id: meta.id, ...rest };
+    return {
+      body: JSON.stringify(updatedResp),
+      headers: {},
+      statusCode: 200,
+    };
+  }
+};
 
 const updateEntity = async (
   entityId?: string,
