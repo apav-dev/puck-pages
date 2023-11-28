@@ -1,5 +1,4 @@
 import { SitesHttpRequest, SitesHttpResponse } from "@yext/pages/*";
-import { fetch } from "@yext/pages/util";
 
 export default async function entity(
   request: SitesHttpRequest

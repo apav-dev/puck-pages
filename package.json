@@ -11,10 +11,11 @@
     "prod": "pages prod",
     "fmt": "prettier -w .",
     "lint": "eslint .",
-    "clean": "rm -rf .artifact-output .yext/ dist/ localData sites-rendered-output"
+    "clean": "rm -rf .artifact-output .yext/ dist/ localData sites-rendered-output",
+    "build:local": "pages build"
   },
   "engines": {
-    "node": ">=17"
+    "node": "^18.0.0 || >=20.0.0"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.3",
@@ -32,7 +33,7 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-toast": "^1.1.5",
     "@tanstack/react-query": "^5.8.2",
-    "@yext/sites-components": "^1.0.0-rc.5",
+    "@yext/sites-components": "1.0.0-rc.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^1.2.1",
     "cva": "npm:class-variance-authority@^0.7.0",
@@ -57,7 +58,7 @@
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
     "@vitejs/plugin-react": "^4.0.4",
-    "@yext/pages": "https://github.com/mkilpatrick/pagesjs-sumo-demo/raw/master/yext-pages-1.0.0-rc.6-beta1.tgz",
+    "@yext/pages": "1.0.0-rc.6",
     "autoprefixer": "^10.4.8",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-react": "^7.31.7",
@@ -66,6 +67,6 @@
     "prettier": "^2.7.1",
     "tailwindcss": "^3.1.8",
     "typescript": "^4.8.3",
-    "vite": "^4.4.9"
+    "vite": "4.4.9"
   }
 }

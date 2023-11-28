@@ -1,5 +1,4 @@
 import { SitesHttpRequest, SitesHttpResponse } from "@yext/pages/*";
-import { fetch } from "@yext/pages/util";
 
 const CLOUDFLARE_WORKER_URL = "https://temp-storage.ajpavlick.workers.dev";
 
@@ -45,8 +44,13 @@ const getEntity = async (entityId?: string): Promise<SitesHttpResponse> => {
       statusCode: mgmtApiResp.status,
     };
   } else {
+    const { response } = resp;
+    const { c_template, slug, meta, ...rest } = response;
+
+    // excluding c_template and slug from the response and pulling id out of meta
+    const updatedResp = { id: meta.id, ...rest };
     return {
-      body: JSON.stringify(resp),
+      body: JSON.stringify(updatedResp),
       headers: {},
       statusCode: 200,
     };

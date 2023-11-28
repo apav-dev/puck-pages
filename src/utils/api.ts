@@ -81,7 +81,7 @@ export const fetchEndpoint = async (
   return body;
 };
 
-export const fetchEntity = async (entityId: string): Promise<YextResponse> => {
+export const fetchEntity = async (entityId: string): Promise<any> => {
   const response = await fetch(`/api/entity/${entityId}`);
   const body = await response.json();
   return body;

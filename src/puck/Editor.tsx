@@ -1,6 +1,5 @@
 import { Puck } from "@measured/puck";
 import type { Data } from "@measured/puck";
-import { fetch } from "@yext/pages/util";
 import config from "../config";
 import { useToast } from "../components/useToast";
 import { ToastAction } from "../components/Toast";

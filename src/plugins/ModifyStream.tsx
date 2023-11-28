@@ -56,13 +56,10 @@ export const FieldSelector = () => {
   });
 
   const resetForm = () => {
-    const fieldsList = Object.entries(entityQuery.data?.response).map(
-      ([k, v]) => ({
-        fieldId: k,
-        checked:
-          endpointQuery.data?.response.stream.fields.includes(k) ?? false,
-      })
-    );
+    const fieldsList = Object.entries(entityQuery.data).map(([k, v]) => ({
+      fieldId: k,
+      checked: endpointQuery.data?.response.stream.fields.includes(k) ?? false,
+    }));
 
     // Sort the fields list so that checked fields appear first
     const sortedFieldsList = [...fieldsList].sort((a, b) => {

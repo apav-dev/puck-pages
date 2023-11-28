@@ -1,5 +1,4 @@
 import { SitesHttpRequest, SitesHttpResponse } from "@yext/pages/*";
-import { fetch } from "@yext/pages/util";
 import * as z from "zod";
 
 const contentEndpointPatchReq = {
