@@ -74,14 +74,14 @@ export const transformProps = async (
 
   return {
     ...data,
-    document: { ...data.document, templateData: injectedTemplate },
+    document: { ...locationData, templateData: injectedTemplate },
   };
 };
 
 const Locations: Template<TemplateRenderProps<LocationsType>> = ({
   document,
 }) => {
-  const { name, templateData } = document;
+  const { templateData } = document;
 
   if (templateData) {
     return (

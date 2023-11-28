@@ -16,8 +16,7 @@ const getClassName = getClassNameFactory("Hero", styles);
 
 // TODO: Add photo and address fields
 export type HeroProps = {
-  entityTitleField?: { fieldId: string; value: string };
-  title: string;
+  title: { fieldId?: string; value: string };
   description: string;
   align?: string;
   padding: string;
@@ -34,7 +33,7 @@ export type HeroProps = {
 
 export const Hero: ComponentConfig<HeroProps> = {
   fields: {
-    entityTitleField: {
+    title: {
       label: "Entity Title Field",
       type: "external",
       placeholder: "Title",
@@ -47,7 +46,6 @@ export const Hero: ComponentConfig<HeroProps> = {
       },
       getItemSummary: (item) => item?.fieldId || "Select a Field Value",
     },
-    title: { type: "text" },
     description: { type: "textarea" },
     buttons: {
       type: "array",
@@ -110,7 +108,7 @@ export const Hero: ComponentConfig<HeroProps> = {
     padding: { type: "text" },
   },
   defaultProps: {
-    title: "Hero",
+    title: { value: "Title" },
     align: "left",
     description: "Description",
     buttons: [{ label: "Learn more", href: "#" }],
@@ -128,13 +126,13 @@ export const Hero: ComponentConfig<HeroProps> = {
    */
   resolveData: async ({ props }, { changed }) => {
     // Determine if there's nothing to update
-    if (!changed.entityTitleField) {
+    if (!changed.title) {
       return { props };
     }
 
     // Fetch the entity if necessary
     let entity;
-    if (changed.entityTitleField) {
+    if (changed.title) {
       const entityId = getEntityIdFromUrl();
       const entityResponse = await fetchLocation(entityId);
       entity = entityResponse.response.docs?.[0];
@@ -144,8 +142,8 @@ export const Hero: ComponentConfig<HeroProps> = {
     const newProps = { ...props };
 
     // Update title if entityTitleField has changed
-    if (changed.entityTitleField && props.entityTitleField) {
-      newProps.title = getValueByPath(entity, props.entityTitleField.fieldId);
+    if (changed.title && props.title?.fieldId) {
+      newProps.title.value = getValueByPath(entity, props.title.fieldId);
     }
 
     // Set defaults or other logic for unchanged props
@@ -197,7 +195,7 @@ export const Hero: ComponentConfig<HeroProps> = {
 
         <div className={getClassName("inner")}>
           <div className={getClassName("content")}>
-            <h1>{title}</h1>
+            <h1>{title?.value}</h1>
             {/* <p className={getClassName("subtitle")}>{description}</p> */}
             <div className={getClassName("actions")}>
               {buttons.map((button, i) => (
