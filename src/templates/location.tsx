@@ -13,11 +13,22 @@ import { Data, Render } from "@measured/puck";
 import puckConfig from "../config";
 import { injectDocumentValues } from "../utils/puck-utils";
 import { fetchLocation } from "../utils/api";
+import { useEffect } from "react";
 
 export const config: TemplateConfig = {
   stream: {
     $id: "locations",
-    fields: ["slug", "c_template", "id"],
+    fields: [
+      "slug",
+      "c_template",
+      "id",
+      "name",
+      "address",
+      "cityCoordinate",
+      "photoGallery",
+      "yextDisplayCoordinate",
+      "description",
+    ],
     filter: {
       entityTypes: ["location"],
     },
@@ -53,7 +64,6 @@ export const getHeadConfig: GetHeadConfig<TemplateRenderProps> = ({
   };
 };
 
-// TODO: add deserilization to replace entity references with strings
 export const transformProps = async (
   data: TemplateRenderProps<LocationsType>
 ) => {
@@ -68,9 +78,13 @@ export const transformProps = async (
 
   const response = await fetch(document.c_template.url);
   const templateData: Data = await response.json();
+
   // const injectedTemplate = injectDocumentValues(document, templateData);
-  // rather than inject document values, data from a content endpoint is used
+
+  // rather than inject document values, inject from content endpoint
   const injectedTemplate = injectDocumentValues(locationData, templateData);
+
+  console.log("injectedTemplate hero props", injectedTemplate.content[0].props);
 
   return {
     ...data,
@@ -83,15 +97,11 @@ const Locations: Template<TemplateRenderProps<LocationsType>> = ({
 }) => {
   const { templateData } = document;
 
-  if (templateData) {
-    return (
-      <>
-        <Render config={puckConfig} data={templateData} />
-      </>
-    );
-  } else {
-    return <h1>No TemplateData</h1>;
-  }
+  useEffect(() => {
+    console.log("document", document);
+  }, [templateData]);
+
+  return <Render config={puckConfig} data={templateData} />;
 };
 
 export default Locations;
