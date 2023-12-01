@@ -15,8 +15,7 @@ export { getHeadConfig } from "../layouts/location/getHeadConfig";
 export const config = streamConfig;
 
 export const getPath: GetPath<TemplateProps> = ({ document }) => {
-  const randomNumber = Math.floor(10000 + Math.random() * 90000); // Generate a random 5-digit number
-  return `location/${randomNumber}`;
+  return document.slug ?? document.name;
 };
 
 // Initialize the configuration asynchronously

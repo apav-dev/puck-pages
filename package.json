@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "node prebuild.cjs",
     "build": "npm run prebuild && pages build",
-    "dev": "pages dev",
+    "dev": "node prebuild.cjs && pages dev",
     "prod": "pages prod",
     "fmt": "prettier -w .",
     "lint": "eslint .",
