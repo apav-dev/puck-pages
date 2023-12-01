@@ -10,3 +10,5 @@ sites-config/features.json
 
 .DS_Store
 .env
+
+stream.json

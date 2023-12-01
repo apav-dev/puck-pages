@@ -6,7 +6,8 @@
   "license": "BSD-3-Clause",
   "type": "module",
   "scripts": {
-    "build": "pages build",
+    "prebuild": "node prebuild.cjs",
+    "build": "npm run prebuild && pages build",
     "dev": "pages dev",
     "prod": "pages prod",
     "fmt": "prettier -w .",
