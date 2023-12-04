@@ -1,12 +1,12 @@
 import { SitesHttpRequest, SitesHttpResponse } from "@yext/pages/*";
 import * as z from "zod";
-import { createClient } from "@vercel/kv";
+// import { createClient } from "@vercel/kv";
 
-const kv = createClient({
-  url: "https://superb-lion-48217.kv.vercel-storage.com",
-  token:
-    "AbxZASQgNTY3NWM2M2YtNzNhMy00YTlkLWFjYTQtMmU1Mzg1OGRmMWZjNTJjZGUzMTUwOGIyNDgyMTk5ODRkMzJkNDNhN2M4MTg=",
-});
+// const kv = createClient({
+//   url: "https://superb-lion-48217.kv.vercel-storage.com",
+//   token:
+//     "AbxZASQgNTY3NWM2M2YtNzNhMy00YTlkLWFjYTQtMmU1Mzg1OGRmMWZjNTJjZGUzMTUwOGIyNDgyMTk5ODRkMzJkNDNhN2M4MTg=",
+// });
 
 const contentEndpointPatchReq = {
   stream: {
@@ -112,7 +112,7 @@ export default async function streams(
       };
 
       // This could be updated to handle multiple streams
-      await kv.set(streamId, stream);
+      // await kv.set(streamId, stream);
 
       // TODO: figure out what I should return (if anything) here
       return { body: "{}", headers: responseHeaders, statusCode: 201 };
