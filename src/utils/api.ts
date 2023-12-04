@@ -87,11 +87,11 @@ export const fetchEntity = async (entityId: string): Promise<any> => {
   return body;
 };
 
-export const updateEndpoint = async (
+export const updateStream = async (
   endpointId: string,
   endpointBody: { fields: { fieldId: string; checked: boolean }[] }
 ): Promise<YextResponse> => {
-  const response = await fetch(`/api/endpoint/${endpointId}`, {
+  const response = await fetch(`/api/streams/${endpointId}`, {
     method: "PATCH",
     body: JSON.stringify(endpointBody),
     headers: {
@@ -99,7 +99,7 @@ export const updateEndpoint = async (
     },
   });
 
-  if (response.status !== 200) {
+  if (response.status !== 201) {
     throw new Error(response.statusText);
   }
 

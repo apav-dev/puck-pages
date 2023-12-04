@@ -20,7 +20,6 @@ export default async function endpoint(
   switch (method) {
     case "GET":
       return getEndpoint(pathParams.id);
-    // TODO: update to patch endpoint based on the fieldId that is passed in
     case "PATCH":
       if (!body) {
         return { body: "Missing entity body", headers: {}, statusCode: 400 };

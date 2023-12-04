@@ -2,7 +2,7 @@ import { AppState } from "@measured/puck";
 import { ReactNode, useEffect, useState } from "react";
 import { SidebarSection } from "../components/SidebarSection";
 import { useQuery } from "@tanstack/react-query";
-import { fetchEndpoint, fetchEntity, updateEndpoint } from "../utils/api";
+import { fetchEndpoint, fetchEntity, updateStream } from "../utils/api";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,7 @@ import { Button } from "../components/Button";
 import { useToast } from "../components/useToast";
 
 export const FieldSelector = () => {
+  // hardcode endpointId for now
   const [endpointId, setEndpointId] = useState<string>("locations");
   const [entityId, setEntityId] = useState<string | undefined>("");
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -119,12 +120,13 @@ export const FieldSelector = () => {
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     setDialogOpen(false);
     try {
-      await updateEndpoint(endpointId, values);
+      await updateStream(endpointId, values);
       toast({
         title: "Success",
         description: `Stream updated successfully.`,
       });
     } catch (error) {
+      debugger;
       toast({
         title: "Error",
         description: "Something went wrong. Failed to update stream.",

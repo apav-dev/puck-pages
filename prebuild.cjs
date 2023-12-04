@@ -1,11 +1,21 @@
 const fs = require('fs').promises;
-// const { configBuilder } = require('./path/to/configBuilder');
+const vercel = require("@vercel/kv");
+
 
 async function preBuild() {
+  const kv = vercel.createClient({
+    url: "https://superb-lion-48217.kv.vercel-storage.com",
+    token:
+      "AbxZASQgNTY3NWM2M2YtNzNhMy00YTlkLWFjYTQtMmU1Mzg1OGRmMWZjNTJjZGUzMTUwOGIyNDgyMTk5ODRkMzJkNDNhN2M4MTg=",
+  });
+
   try {
-    const config = await fetch("https://rj5zl0ygxkk90ul8.public.blob.vercel-storage.com/streams-sOHBGXIVYy4DjZglr2hAEQcpKxGnCt.json");
-    const stream = await config.json();
-    await fs.writeFile('stream.json', JSON.stringify(stream[0]));
+    try {
+      const locationsStream = await kv.get('locations');
+      await fs.writeFile('stream.json', JSON.stringify(locationsStream));
+    } catch (error) {
+      // Handle errors
+    }
   } catch (error) {
     console.error('Pre-build error:', error);
   }
