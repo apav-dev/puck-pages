@@ -12,7 +12,9 @@ import streamConfig from "../../stream.json";
 export { transformProps } from "../layouts/location/transformProps";
 export { getHeadConfig } from "../layouts/location/getHeadConfig";
 
-export const config = streamConfig;
+export const config = {
+  stream: streamConfig,
+};
 
 export const getPath: GetPath<TemplateProps> = ({ document }) => {
   return document.slug ?? document.name;
