@@ -1,9 +1,9 @@
 const fs = require('fs').promises;
-const vercel = require("@vercel/kv");
+const { createClient } = require("@vercel/kv");
 
 
 async function preBuild() {
-  const kv = vercel.createClient({
+  const kv = createClient({
     url: "https://superb-lion-48217.kv.vercel-storage.com",
     token:
       "AbxZASQgNTY3NWM2M2YtNzNhMy00YTlkLWFjYTQtMmU1Mzg1OGRmMWZjNTJjZGUzMTUwOGIyNDgyMTk5ODRkMzJkNDNhN2M4MTg=",
