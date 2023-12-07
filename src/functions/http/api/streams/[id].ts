@@ -1,12 +1,5 @@
 import { SitesHttpRequest, SitesHttpResponse } from "@yext/pages/*";
 import * as z from "zod";
-// import { createClient } from "@vercel/kv";
-
-// const kv = createClient({
-//   url: "https://superb-lion-48217.kv.vercel-storage.com",
-//   token:
-//     "AbxZASQgNTY3NWM2M2YtNzNhMy00YTlkLWFjYTQtMmU1Mzg1OGRmMWZjNTJjZGUzMTUwOGIyNDgyMTk5ODRkMzJkNDNhN2M4MTg=",
-// });
 
 const contentEndpointPatchReq = {
   stream: {
@@ -112,7 +105,16 @@ export default async function streams(
       };
 
       // This could be updated to handle multiple streams
-      // await kv.set(streamId, stream);
+      console.log("Setting stream:", streamId, stream);
+      const resp = await redis.set(streamId, JSON.stringify(stream));
+      if (resp.error) {
+        console.error("Error setting stream:", resp.error);
+        return {
+          body: JSON.stringify(resp.error),
+          headers: responseHeaders,
+          statusCode: 400,
+        };
+      }
 
       // TODO: figure out what I should return (if anything) here
       return { body: "{}", headers: responseHeaders, statusCode: 201 };
@@ -161,4 +163,81 @@ const validRequestBody = (body: any): boolean => {
     console.error("Invalid request body:", error);
     return false;
   }
+};
+
+export type HttpMethod =
+  | "GET"
+  | "POST"
+  | "PUT"
+  | "DELETE"
+  | "PATCH"
+  | "HEAD"
+  | "OPTIONS";
+
+export type KVMethod = "hget" | "hset" | "hgetall" | "del" | "set";
+export type KVResponse = {
+  result?: string | string[];
+  error?: string;
+};
+
+export class Request {
+  method: string;
+  headers?: any;
+  body?: any;
+
+  constructor(method: string, headers?: any, body?: any) {
+    this.method = method;
+    if (headers) {
+      this.headers = headers;
+    }
+    if (body) {
+      this.body = JSON.stringify(body);
+    }
+  }
+}
+
+const kvRequest = async (
+  httpMethod: HttpMethod,
+  kvMethod: KVMethod,
+  key: string,
+  value?: string
+): Promise<KVResponse> => {
+  const url = `${KV_REST_API_URL}/${kvMethod}/${key}`;
+
+  const request: Request = {
+    method: httpMethod,
+    headers: {
+      Authorization: `Bearer ${KV_REST_API_TOKEN}`,
+    },
+  };
+
+  if (value) {
+    request.body = value;
+  }
+
+  try {
+    const response = await fetch(url, request);
+    return await response.json();
+  } catch (err) {
+    console.error(`Error with request to KV ${url}: ${err}`, err);
+    throw err;
+  }
+};
+
+const redis = {
+  set: async (key: string, value: string): Promise<KVResponse> => {
+    return await kvRequest("PUT", "set", key, value);
+  },
+  hget: async (key: string): Promise<KVResponse> => {
+    return await kvRequest("GET", "hget", key);
+  },
+  hset: async (key: string, value: string): Promise<KVResponse> => {
+    return await kvRequest("PUT", "hset", key, value);
+  },
+  hgetall: async (key: string): Promise<KVResponse> => {
+    return await kvRequest("GET", "hgetall", key);
+  },
+  del: async (key: string): Promise<KVResponse> => {
+    return await kvRequest("GET", "del", key);
+  },
 };
