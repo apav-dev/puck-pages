@@ -40,10 +40,10 @@ const imagesSchema = z.array(
 // Function to help with reordering the result
 // TODO: type item properly
 const reorder = (
-  list: Item[],
+  list: { fieldId?: string; value: string }[],
   startIndex: number,
   endIndex: number
-): Item[] => {
+): { fieldId?: string; value: string }[] => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
@@ -56,6 +56,7 @@ export const ImagesField = ({
   field,
   value,
   entityId,
+  onChange,
 }: ImagesFieldProps) => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [selectedImageIdx, setSelectedImageIdx] = useState<number>(0);
@@ -94,13 +95,13 @@ export const ImagesField = ({
     [images]
   );
 
-  function onSubmit(values: z.infer<typeof imagesSchema>) {
+  const onSubmit = () => {
     setDialogOpen(false);
-    console.log(values);
-  }
+    onChange(images);
+  };
 
   return (
-    <Dialog open={dialogOpen}>
+    <Dialog open={dialogOpen} onOpenChange={(isOpen) => setDialogOpen(isOpen)}>
       <FieldLabel
         label={field.label || name}
         // TODO: replace with images icon
@@ -228,9 +229,8 @@ export const ImagesField = ({
                 )}
               </div>
             </div>
-            {/* </div> */}
             <div className="flex justify-end items-center p-2">
-              <Button className="p-4" onClick={() => setDialogOpen(false)}>
+              <Button type="submit" className="p-4" onClick={() => onSubmit()}>
                 Done
               </Button>
             </div>

@@ -1,5 +1,4 @@
 import { ComponentConfig } from "@measured/puck";
-import { ImageSelector } from "../../components/fields/ImageUrlField";
 import { getEntityIdFromUrl } from "../../utils/getEntityIdFromUrl";
 import { ImagesField } from "../../components/fields/ImagesField";
 
