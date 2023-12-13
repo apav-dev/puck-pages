@@ -2,9 +2,11 @@ import { Config, Data } from "@measured/puck";
 import { Hero, HeroProps } from "./Hero";
 
 import Root, { RootProps } from "./root";
+import { Gallery, GalleryProps } from "./Gallery";
 
 type Props = {
   Hero: HeroProps;
+  Gallery: GalleryProps;
 };
 
 // We avoid the name config as next gets confused
@@ -14,6 +16,7 @@ export const conf: Config<Props, RootProps> = {
   },
   components: {
     Hero,
+    Gallery,
   },
 };
 
