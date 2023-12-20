@@ -11,7 +11,7 @@ import {
 import { Editor } from "../puck/Editor";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchEntityTemplateData } from "../utils/api";
+import { fetchEntityDocument } from "../utils/api";
 import { getEntityIdFromUrl } from "../utils/getEntityIdFromUrl";
 import { Toaster } from "../components/Toaster";
 
@@ -41,14 +41,15 @@ const Puck: Template<TemplateRenderProps> = () => {
   const { data, isSuccess } = useQuery({
     queryKey: ["entityId", entityId],
     retry: false,
-    queryFn: () => fetchEntityTemplateData(entityId),
+    // Just fetching the locations document for now
+    queryFn: () => fetchEntityDocument("locations", entityId),
     enabled: entityId !== "",
   });
 
   useEffect(() => {
     const fetchTemplateData = async () => {
       if (data) {
-        const response = await fetch(data.response.docs[0].c_template.url);
+        const response = await fetch(data.response.c_template.url);
         const json = await response.json();
         setTemplateData(json);
         setEntitySlug(data.response.docs[0].slug);

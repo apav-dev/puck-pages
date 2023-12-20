@@ -24,7 +24,10 @@ export const transformProps = async (
   // rather than inject document values, inject from content endpoint
   // const injectedTemplate = injectDocumentValues(locationData, templateData);
 
-  console.log("injectedTemplate hero props", injectedTemplate.content[0].props);
+  console.log(
+    "injectedTemplate hero props",
+    JSON.stringify(injectedTemplate.content[0].props)
+  );
 
   return {
     ...data,

@@ -69,19 +69,6 @@ export const Hero: ComponentConfig<HeroProps> = {
         { label: "center", value: "center" },
       ],
     },
-    // imageUrlField: {
-    //   label: "Image URL Field",
-    //   type: "external",
-    //   placeholder: "Title",
-    //   fetchList: async () => {
-    //     const entityId = getEntityIdFromUrl();
-
-    //     if (!entityId) return [];
-
-    //     return getEntityFieldsList(entityId, "url");
-    //   },
-    //   getItemSummary: (item) => item?.fieldId || "Select a Field Value",
-    // },
     image: {
       label: "Image URL",
       type: "custom",
