@@ -9,8 +9,8 @@ import {
   getValueByPath,
 } from "../../utils/puck-utils";
 import { getEntityIdFromUrl } from "../../utils/getEntityIdFromUrl";
-import { fetchLocation } from "../../utils/api";
 import { ImageSelector } from "../../components/fields/ImageUrlField";
+import { fetchEntityDocument } from "../../utils/api";
 
 const getClassName = getClassNameFactory("Hero", styles);
 
@@ -121,8 +121,8 @@ export const Hero: ComponentConfig<HeroProps> = {
     let entity;
     if (changed.title) {
       const entityId = getEntityIdFromUrl();
-      const entityResponse = await fetchLocation(entityId);
-      entity = entityResponse.response.docs?.[0];
+      const entityResponse = await fetchEntityDocument("locations", entityId);
+      entity = entityResponse.response;
     }
 
     // Create a new props object based on the old one

@@ -1,6 +1,6 @@
 import { Content, Data } from "@measured/puck";
 import classnames from "classnames";
-import { fetchLocation } from "./api";
+import { fetchEntityDocument } from "./api";
 
 export const getGlobalClassName = (rootClass, options) => {
   if (typeof options === "string") {
@@ -210,7 +210,7 @@ export const getEntityFieldsList = async (
   entityId: string,
   fieldType: "string" | "number" | "url" | "image url"
 ) => {
-  const response = await fetchLocation(entityId);
-  const entity = response.response.docs?.[0];
+  const response = await fetchEntityDocument("locations", entityId);
+  const entity = response.response;
   return getFieldValuesList(entity, fieldType);
 };

@@ -35,6 +35,7 @@ export const FieldSelector = () => {
   const [endpointId, setEndpointId] = useState<string>("locations");
   const [entityId, setEntityId] = useState<string | undefined>("");
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [warningDialogOpen, setWarningDialogOpen] = useState<boolean>(false);
 
   const { toast } = useToast();
 
@@ -117,10 +118,18 @@ export const FieldSelector = () => {
     form.setValue("fields", updatedFields);
   };
 
-  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     setDialogOpen(false);
+    setWarningDialogOpen(true);
+  };
+
+  const handleFinalSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setDialogOpen(false);
+    setWarningDialogOpen(false);
     try {
-      await updateStream(endpointId, values);
+      await updateStream(endpointId, form.getValues());
       toast({
         title: "Success",
         description: `Stream updated successfully.`,
@@ -134,8 +143,10 @@ export const FieldSelector = () => {
     }
   };
 
+  // TODO: Why is Dialog appearing on cancel?
   const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    setWarningDialogOpen(false);
     setDialogOpen(false);
     resetForm();
   };
@@ -204,11 +215,42 @@ export const FieldSelector = () => {
                   </TableBody>
                 </Table>
               </ScrollArea>
-              <Button className="my-4" type="submit">
+
+              <Button
+                className="my-4"
+                onClick={() => setWarningDialogOpen(true)}
+              >
                 Submit
+              </Button>
+              <Button
+                className="my-4 ml-4"
+                variant="secondary"
+                onClick={handleCancel}
+              >
+                Cancel
               </Button>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={warningDialogOpen}>
+        <DialogContent>
+          <DialogTitle>Are you sure you want to modify the stream?</DialogTitle>
+          <DialogDescription>
+            You will need to redeploy your site to see the changes on your site.
+          </DialogDescription>
+          <div className="flex">
+            <Button className="my-4" onClick={handleFinalSubmit}>
+              Submit
+            </Button>
+            <Button
+              className="my-4 ml-4"
+              variant="secondary"
+              onClick={handleCancel}
+            >
+              Cancel
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </SidebarSection>

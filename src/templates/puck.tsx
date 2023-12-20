@@ -52,7 +52,7 @@ const Puck: Template<TemplateRenderProps> = () => {
         const response = await fetch(data.response.c_template.url);
         const json = await response.json();
         setTemplateData(json);
-        setEntitySlug(data.response.docs[0].slug);
+        setEntitySlug(data.response.slug);
       }
     };
     fetchTemplateData();
