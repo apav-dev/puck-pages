@@ -1,8 +1,5 @@
 import { CSSProperties, ReactNode } from "react";
-import styles from "./styles.module.css";
-import { getClassNameFactory } from "../../utils/puck-utils";
-
-const getClassName = getClassNameFactory("Section", styles);
+import { cn } from "../../utils/cn";
 
 export type SectionProps = {
   className?: string;
@@ -21,14 +18,14 @@ export const Section = ({
 }: SectionProps) => {
   return (
     <div
-      className={`${getClassName()}${className ? ` ${className}` : ""}`}
+      className={cn(`px-4 md:px-6`, className)}
       style={{
         ...style,
         paddingTop: padding,
         paddingBottom: padding,
       }}
     >
-      <div className={getClassName("inner")} style={{ maxWidth }}>
+      <div className="mx-auto w-full" style={{ maxWidth }}>
         {children}
       </div>
     </div>

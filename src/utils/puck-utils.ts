@@ -1,6 +1,6 @@
 import { Content, Data } from "@measured/puck";
 import classnames from "classnames";
-import { fetchLocation } from "./api";
+import { fetchEntityDocument } from "./api";
 
 export const getGlobalClassName = (rootClass, options) => {
   if (typeof options === "string") {
@@ -161,21 +161,29 @@ export const injectDocumentValues = (
 ): Data => {
   const newData: Data = JSON.parse(JSON.stringify(templateData)); // Deep copy of templateData
 
+  const processProp = (prop: any) => {
+    if (Array.isArray(prop)) {
+      prop.forEach((item) => processProp(item));
+    } else if (prop && typeof prop === "object") {
+      if ("fieldId" in prop && "value" in prop) {
+        prop.value = getValueByPath(document, prop.fieldId);
+      } else {
+        for (const key in prop) {
+          if (prop.hasOwnProperty(key)) {
+            processProp(prop[key]);
+          }
+        }
+      }
+    }
+  };
+
   const processContent = (content: Content<WithPuckProps<any>>) => {
     for (const key in content) {
       if (content.hasOwnProperty(key)) {
         const component = content[key];
         for (const propKey in component.props) {
           if (component.props.hasOwnProperty(propKey)) {
-            const prop = component.props[propKey];
-            if (
-              prop &&
-              typeof prop === "object" &&
-              "fieldId" in prop &&
-              "value" in prop
-            ) {
-              prop.value = getValueByPath(document, prop.fieldId);
-            }
+            processProp(component.props[propKey]);
           }
         }
       }
@@ -184,6 +192,7 @@ export const injectDocumentValues = (
 
   processContent(newData.content);
 
+  // Process zones if they exist
   // if (newData.zones) {
   //   for (const zoneKey in newData.zones) {
   //     if (newData.zones.hasOwnProperty(zoneKey)) {
@@ -192,6 +201,8 @@ export const injectDocumentValues = (
   //   }
   // }
 
+  console.log("newData", newData.content[0].props.stringFields);
+
   return newData;
 };
 
@@ -199,7 +210,7 @@ export const getEntityFieldsList = async (
   entityId: string,
   fieldType: "string" | "number" | "url" | "image url"
 ) => {
-  const response = await fetchLocation(entityId);
-  const entity = response.response.docs?.[0];
+  const response = await fetchEntityDocument("locations", entityId);
+  const entity = response.response;
   return getFieldValuesList(entity, fieldType);
 };
