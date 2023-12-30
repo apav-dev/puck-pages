@@ -38,6 +38,7 @@
     "@vercel/kv": "^1.0.0",
     "@yext/pages-components": "^1.0.0-rc.0",
     "@yext/sites-components": "1.0.0-rc.5",
+    "@yext/sites-react-components": "^0.1.19-beta.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^1.2.1",
     "cva": "npm:class-variance-authority@^0.7.0",

@@ -1,22 +1,25 @@
-import { useState } from "react";
 import { ComponentConfig } from "@measured/puck";
 import { Button } from "@measured/puck";
 import { Section } from "../Section";
 import styles from "./styles.module.css";
-import {
-  getClassNameFactory,
-  getEntityFieldsList,
-  getValueByPath,
-} from "../../utils/puck-utils";
+import { getClassNameFactory } from "../../utils/puck-utils";
 import { getEntityIdFromUrl } from "../../utils/getEntityIdFromUrl";
 import { ImageSelector } from "../../components/fields/ImageUrlField";
-import { fetchEntityDocument } from "../../utils/api";
+import { TextField } from "../../components/fields/TextField";
+import { HeadingField } from "../../components/fields/HeadingField";
+import { EntityHeadingText } from "../../components/EntityHeadingText";
 
 const getClassName = getClassNameFactory("Hero", styles);
 
-// TODO: Add photo and address fields
 export type HeroProps = {
-  title: { fieldId?: string; value: string };
+  title?: {
+    inputValue: string;
+    stringFields?: { fieldId: string; value: string }[];
+  };
+  subtitle?: {
+    inputValue: string;
+    stringFields?: { fieldId: string; value: string }[];
+  };
   description: string;
   align?: string;
   padding: string;
@@ -34,19 +37,56 @@ export type HeroProps = {
 export const Hero: ComponentConfig<HeroProps> = {
   fields: {
     title: {
-      label: "Entity Title Field",
-      type: "external",
-      placeholder: "Title",
-      fetchList: async () => {
+      label: "Title",
+      type: "custom",
+      render: ({ field, onChange, value, name }) => {
         const entityId = getEntityIdFromUrl();
-
-        if (!entityId) return [];
-
-        return getEntityFieldsList(entityId, "string");
+        return (
+          <HeadingField
+            entityId={entityId}
+            field={field}
+            value={value}
+            name={name}
+            onChange={onChange}
+            label="Title"
+          />
+        );
       },
-      getItemSummary: (item) => item?.fieldId || "Select a Field Value",
     },
-    description: { type: "textarea" },
+    subtitle: {
+      label: "Subtitle",
+      type: "custom",
+      render: ({ field, onChange, value, name }) => {
+        const entityId = getEntityIdFromUrl();
+        return (
+          <HeadingField
+            entityId={entityId}
+            field={field}
+            value={value}
+            name={name}
+            onChange={onChange}
+            label="Subtitle"
+          />
+        );
+      },
+    },
+    description: {
+      label: "Description",
+      type: "custom",
+      render: ({ field, onChange, value, name }) => {
+        const entityId = getEntityIdFromUrl();
+        return (
+          <TextField
+            entityId={entityId}
+            field={field}
+            value={value}
+            name={name}
+            onChange={onChange}
+            label="Description"
+          />
+        );
+      },
+    },
     buttons: {
       type: "array",
       getItemSummary: (item) => item.label || "Button",
@@ -95,58 +135,15 @@ export const Hero: ComponentConfig<HeroProps> = {
     padding: { type: "text" },
   },
   defaultProps: {
-    title: { value: "Title" },
+    // title: { value: "Title" },
     align: "left",
     description: "Description",
     buttons: [{ label: "Learn more", href: "#" }],
     padding: "64px",
   },
-  /**
-   * The resolveData method allows us to modify component data after being
-   * set by the user.
-   *
-   * It is called after the page data is changed, but before a component
-   * is rendered. This allows us to make dynamic changes to the props
-   * without storing the data in Puck.
-   *
-   * For example, requesting a third-party API for the latest content.
-   */
-  resolveData: async ({ props }, { changed }) => {
-    // Determine if there's nothing to update
-    if (!changed.title) {
-      return { props };
-    }
-
-    // Fetch the entity if necessary
-    let entity;
-    if (changed.title) {
-      const entityId = getEntityIdFromUrl();
-      const entityResponse = await fetchEntityDocument("locations", entityId);
-      entity = entityResponse.response;
-    }
-
-    // Create a new props object based on the old one
-    const newProps = { ...props };
-
-    // Update title if entityTitleField has changed
-    if (changed.title && props.title?.fieldId) {
-      newProps.title.value = getValueByPath(entity, props.title.fieldId);
-    }
-
-    // Set defaults or other logic for unchanged props
-    newProps.description = newProps.description || "description goes here";
-
-    return {
-      props: newProps,
-      readOnly: {
-        title: false,
-        description: true,
-        // imageUrl: false,
-      },
-    };
-  },
   render: ({
     title,
+    subtitle,
     align,
     description,
     buttons,
@@ -154,10 +151,6 @@ export const Hero: ComponentConfig<HeroProps> = {
     image,
     imageMode,
   }) => {
-    // Empty state allows us to test that components support hooks
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [_] = useState(0);
-
     return (
       <Section
         padding={padding}
@@ -182,7 +175,8 @@ export const Hero: ComponentConfig<HeroProps> = {
 
         <div className={getClassName("inner")}>
           <div className={getClassName("content")}>
-            <h1>{title?.value}</h1>
+            <EntityHeadingText text={subtitle} headingLevel="h3" />
+            <EntityHeadingText text={title} headingLevel="h1" />
             {/* <p className={getClassName("subtitle")}>{description}</p> */}
             <div className={getClassName("actions")}>
               {buttons.map((button, i) => (

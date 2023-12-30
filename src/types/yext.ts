@@ -5,4 +5,5 @@ export type EntityFieldType =
   | "image url"
   | "phone number"
   | "email"
-  | "address";
+  | "address"
+  | "hours";
