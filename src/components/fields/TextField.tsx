@@ -3,7 +3,7 @@ import { CustomField } from "@measured/puck";
 import { getEntityFieldsList } from "../../utils/puck-utils";
 import { Textarea } from "../Textarea";
 
-export interface ImageSelectorProps {
+export interface TextFieldProps {
   field: CustomField;
   name: string;
   value: any;
@@ -19,7 +19,7 @@ export const TextField = ({
   value,
   readOnly,
   entityId,
-}: ImageSelectorProps) => {
+}: TextFieldProps) => {
   const entityQuery = useQuery({
     queryKey: ["entity", entityId],
     retry: false,

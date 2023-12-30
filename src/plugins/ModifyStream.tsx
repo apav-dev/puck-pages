@@ -47,6 +47,7 @@ export const FieldSelector = () => {
     queryKey: ["endpoint", endpointId],
     retry: false,
     enabled: !!entityId,
+    // TODO: swap to use fetch document endpoint
     queryFn: () => fetchEndpoint(endpointId),
   });
 

@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchEntityDocument } from "../utils/api";
 import { getEntityIdFromUrl } from "../utils/getEntityIdFromUrl";
 import { Toaster } from "../components/Toaster";
+import { PageContextProvider } from "../utils/usePageContext";
 
 export const getPath: GetPath<TemplateProps> = () => {
   return "puck";
@@ -58,15 +59,23 @@ const Puck: Template<TemplateRenderProps> = () => {
     fetchTemplateData();
   }, [data]);
 
+  // TODO: Render a different component if no entityId
   if (templateData && entityId) {
     return (
       <>
-        <Editor
-          initialData={templateData}
-          entityId={entityId}
-          entitySlug={entitySlug}
-        />
-        <Toaster />
+        <PageContextProvider
+          value={{
+            entityId,
+            setEntityId,
+          }}
+        >
+          <Editor
+            initialData={templateData}
+            entityId={entityId}
+            entitySlug={entitySlug}
+          />
+          <Toaster />
+        </PageContextProvider>
       </>
     );
   } else {

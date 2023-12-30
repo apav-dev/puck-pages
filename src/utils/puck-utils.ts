@@ -1,6 +1,8 @@
 import { Content, Data } from "@measured/puck";
 import classnames from "classnames";
 import { fetchEntityDocument } from "./api";
+import { EntityFieldType } from "../types/yext";
+import { AddressType } from "@yext/pages-components";
 
 export const getGlobalClassName = (rootClass, options) => {
   if (typeof options === "string") {
@@ -56,7 +58,7 @@ export const getClassNameFactory =
 
 type FieldValue = {
   fieldId: string;
-  value: string | number;
+  value: string | number | AddressType;
 };
 
 const isUrl = (value: string): boolean => {
@@ -78,42 +80,107 @@ const isImageUrl = (value: string): boolean => {
   return imageUrlRegex.test(value);
 };
 
+const isPhoneNumber = (value: string): boolean => {
+  const phoneNumberRegex = /^\+?[0-9]{10,14}$/;
+  return phoneNumberRegex.test(value);
+};
+
+const isEmail = (value: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(value);
+};
+
+const isAddressType = (value: any): boolean => {
+  const requiredFields = ["line1", "city", "postalCode", "countryCode"];
+  const optionalFields = [
+    "line2",
+    "line3",
+    "region",
+    "sublocality",
+    "extraDescription",
+    "localizedRegionName",
+    "localizedCountryName",
+  ];
+
+  if (typeof value !== "object" || value === null) return false;
+
+  let hasAllRequiredFields = requiredFields.every(
+    (field) => field in value && typeof value[field] === "string"
+  );
+  let hasValidOptionalFields = optionalFields.every(
+    (field) =>
+      !(field in value) ||
+      typeof value[field] === "string" ||
+      value[field] === undefined
+  );
+
+  return hasAllRequiredFields && hasValidOptionalFields;
+};
+
 export const getFieldValuesList = (
   obj: Record<string, any>,
-  type: "string" | "number" | "url" | "image url"
+  type: EntityFieldType
 ): FieldValue[] => {
   const result: FieldValue[] = [];
+
+  const processValue = (value: any, path: string) => {
+    if (type === "address" && isAddressType(value)) {
+      console.log("address", value);
+      result.push({ fieldId: path, value });
+    } else if (type === "url" && typeof value === "string" && isUrl(value)) {
+      result.push({ fieldId: path, value: value });
+    } else if (
+      type === "image url" &&
+      typeof value === "string" &&
+      isUrl(value) &&
+      isImageUrl(value)
+    ) {
+      result.push({ fieldId: path, value: value });
+    } else if (
+      type === "string" &&
+      typeof value === "string" &&
+      !isUrl(value) &&
+      !isEmail(value)
+    ) {
+      result.push({ fieldId: path, value: value });
+    } else if (type === "number" && typeof value === "number") {
+      result.push({ fieldId: path, value: value });
+    } else if (
+      type === "phone number" &&
+      typeof value === "string" &&
+      isPhoneNumber(value)
+    ) {
+      result.push({ fieldId: path, value: value });
+    } else if (
+      type === "email" &&
+      typeof value === "string" &&
+      isEmail(value)
+    ) {
+      result.push({ fieldId: path, value: value });
+    }
+  };
 
   const traverse = (currentObject: any, path: string) => {
     if (Array.isArray(currentObject)) {
       currentObject.forEach((item, index) => {
-        traverse(item, `${path}[${index}]`);
+        const itemPath = `${path}[${index}]`;
+        if (typeof item === "object" && item !== null) {
+          traverse(item, itemPath);
+        } else {
+          processValue(item, itemPath);
+        }
       });
+    } else if (type === "address" && isAddressType(currentObject)) {
+      processValue(currentObject, path);
     } else {
       for (const key in currentObject) {
         if (currentObject.hasOwnProperty(key)) {
           const value = currentObject[key];
           const newPath = path ? `${path}.${key}` : key;
-
-          if (type === "url" && typeof value === "string" && isUrl(value)) {
-            result.push({ fieldId: newPath, value: value });
-          } else if (
-            type === "image url" &&
-            typeof value === "string" &&
-            isUrl(value) &&
-            isImageUrl(value)
-          ) {
-            result.push({ fieldId: newPath, value: value });
-          } else if (
-            type === "string" &&
-            typeof value === "string" &&
-            !isUrl(value)
-          ) {
-            result.push({ fieldId: newPath, value: value });
-          } else if (type === "number" && typeof value === "number") {
-            result.push({ fieldId: newPath, value: value });
-          } else if (typeof value === "object" && value !== null) {
+          if (typeof value === "object" && value !== null) {
             traverse(value, newPath);
+          } else {
+            processValue(value, newPath);
           }
         }
       }
@@ -208,8 +275,10 @@ export const injectDocumentValues = (
 
 export const getEntityFieldsList = async (
   entityId: string,
-  fieldType: "string" | "number" | "url" | "image url"
+  fieldType: EntityFieldType
 ) => {
+  if (entityId === "") return [];
+
   const response = await fetchEntityDocument("locations", entityId);
   const entity = response.response;
   return getFieldValuesList(entity, fieldType);
