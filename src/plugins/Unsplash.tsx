@@ -1,10 +1,14 @@
 import { AppState } from "@measured/puck";
 import { ReactNode, useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "../components/Popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../components/shadcn/Popover";
 import { useQuery } from "@tanstack/react-query";
 import { searchPhotos } from "../utils/api";
 import { UnsplashSearchParams } from "../types/api";
-import { ScrollArea } from "../components/ScrollArea";
+import { ScrollArea } from "../components/shadcn/ScrollArea";
 import { SearchBar } from "../components/SearchBar";
 import { Copy } from "lucide-react";
 import { SidebarSection } from "../components/SidebarSection";

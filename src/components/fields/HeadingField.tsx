@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { CustomField, FieldLabel } from "@measured/puck";
 import { getEntityFieldsList } from "../../utils/puck-utils";
-import { Input } from "../Input";
+import { Input } from "../shadcn/Input";
 
 export interface HeadingFieldProps {
   field: CustomField;

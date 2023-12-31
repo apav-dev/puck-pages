@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAssets, searchPhotos } from "../utils/api";
 import { UnsplashSearchParams } from "../types/api";
-import { ScrollArea } from "./ScrollArea";
+import { ScrollArea } from "./shadcn/ScrollArea";
 import { SearchBar } from "./SearchBar";
-import { Button } from "./Button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./Tabs";
+import { Button } from "./shadcn/Button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./shadcn/Tabs";
 import { getEntityFieldsList } from "../utils/puck-utils";
 
 export interface ImageSelectorProps {

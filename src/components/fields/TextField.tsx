@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { CustomField, FieldLabel } from "@measured/puck";
 import { getEntityFieldsList } from "../../utils/puck-utils";
-import { Textarea } from "../Textarea";
+import { Textarea } from "../shadcn/Textarea";
 
 export interface TextFieldProps {
   field: CustomField;

@@ -1,6 +1,6 @@
 import { ComponentConfig, DropZone } from "@measured/puck";
 // import { DropZone } from "@/core/components/DropZone";
-import { Section } from "../Section";
+import { Section } from "../components/Section";
 
 export type ColumnsProps = {
   distribution: "auto" | "manual";

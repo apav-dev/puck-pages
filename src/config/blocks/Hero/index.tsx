@@ -1,12 +1,12 @@
 import { ComponentConfig } from "@measured/puck";
 import { Button } from "@measured/puck";
-import { Section } from "../Section";
+import { Section } from "../../components/Section";
 import styles from "./styles.module.css";
-import { getClassNameFactory } from "../../utils/puck-utils";
-import { getEntityIdFromUrl } from "../../utils/getEntityIdFromUrl";
-import { ImageSelector } from "../../components/fields/ImageUrlField";
-import { TextField } from "../../components/fields/TextField";
-import { HeadingField } from "../../components/fields/HeadingField";
+import { getClassNameFactory } from "../../../utils/puck-utils";
+import { getEntityIdFromUrl } from "../../../utils/getEntityIdFromUrl";
+import { ImageSelector } from "../../../components/fields/ImageUrlField";
+import { TextField } from "../../../components/fields/TextField";
+import { HeadingField } from "../../../components/fields/HeadingField";
 import { EntityHeadingText } from "../../components/EntityHeadingText";
 
 const getClassName = getClassNameFactory("Hero", styles);
@@ -175,8 +175,16 @@ export const Hero: ComponentConfig<HeroProps> = {
 
         <div className={getClassName("inner")}>
           <div className={getClassName("content")}>
-            <EntityHeadingText text={subtitle} headingLevel="h3" />
-            <EntityHeadingText text={title} headingLevel="h1" />
+            <EntityHeadingText
+              text={subtitle}
+              headingLevel="h3"
+              className="text-2xl font-semibold mb-1"
+            />
+            <EntityHeadingText
+              text={title}
+              headingLevel="h1"
+              className="text-5xl font-bold mb-4"
+            />
             {/* <p className={getClassName("subtitle")}>{description}</p> */}
             <div className={getClassName("actions")}>
               {buttons.map((button, i) => (

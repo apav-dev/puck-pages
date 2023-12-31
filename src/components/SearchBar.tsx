@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Button } from "./Button";
-import { Input } from "./Input";
+import { Button } from "./shadcn/Button";
+import { Input } from "./shadcn/Input";
 import { SearchIcon } from "lucide-react";
 import { useState, useRef } from "react";
 

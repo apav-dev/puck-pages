@@ -2,7 +2,7 @@ import { Puck } from "@measured/puck";
 import type { Data } from "@measured/puck";
 import config from "../config";
 import { useToast } from "../components/useToast";
-import { ToastAction } from "../components/Toast";
+import { ToastAction } from "../components/shadcn/Toast";
 import Unsplash from "../plugins/Unsplash";
 
 import "@measured/puck/dist/index.css";

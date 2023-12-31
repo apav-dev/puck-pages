@@ -1,8 +1,8 @@
 import { ComponentConfig } from "@measured/puck";
-import { Section } from "../Section";
+import { Section } from "../components/Section";
 import { getEntityIdFromUrl } from "../../utils/getEntityIdFromUrl";
 import { TextField } from "../../components/fields/TextField";
-import { useMemo } from "react";
+import { EntityText } from "../components/EntityText";
 
 export type TextProps = {
   align: "left" | "center" | "right";
@@ -75,40 +75,9 @@ export const Text: ComponentConfig<TextProps> = {
     const fontSizeClass = size === "m" ? "text-lg" : "text-base"; // Tailwind classes for different text sizes
     const textAlignClass = `justify-${align}`; // Tailwind class for text alignment
 
-    const parsedText = useMemo(() => {
-      const regex = /\[\[(.+?)\]\]/g;
-      const matches = text?.inputValue.match(regex);
-
-      if (matches && text?.stringFields) {
-        let parsedText = text.inputValue;
-        matches.forEach((match) => {
-          const fieldId = match.slice(2, -2);
-          const matchingObject = text.stringFields?.find(
-            (obj) => obj.fieldId === fieldId
-          );
-
-          if (matchingObject) {
-            parsedText = parsedText.replace(match, matchingObject.value);
-          }
-        });
-        return parsedText;
-      }
-
-      return text?.inputValue;
-    }, [text]);
-
     return (
       <Section padding={padding} maxWidth={maxWidth}>
-        <span
-          className={`${textColorClass} ${fontSizeClass} ${textAlignClass} leading-relaxed px-0`}
-          style={{
-            maxWidth,
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        >
-          {parsedText}
-        </span>
+        <EntityText text={text} />
       </Section>
     );
   },

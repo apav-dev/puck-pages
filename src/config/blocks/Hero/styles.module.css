@@ -23,6 +23,17 @@
   }
 }
 
+/* .Hero h3 {
+  line-height: 1.1;
+  font-size: 48px;
+}
+
+@media (min-width: 768px) {
+  .Hero h3 {
+    font-size: 64px;
+  }
+}
+
 .Hero h1 {
   line-height: 1.1;
   font-size: 48px;
@@ -32,7 +43,7 @@
   .Hero h1 {
     font-size: 64px;
   }
-}
+} */
 
 .Hero-subtitle {
   color: var(--puck-color-grey-4);
