@@ -2,7 +2,14 @@ import { Content, Data } from "@measured/puck";
 import classnames from "classnames";
 import { fetchEntityDocument } from "./api";
 import { EntityFieldType } from "../types/yext";
-import { AddressType } from "@yext/pages-components";
+import {
+  AddressType,
+  DayType,
+  HolidayType,
+  HoursType,
+  IntervalType,
+  WeekType,
+} from "@yext/pages-components";
 
 export const getGlobalClassName = (rootClass, options) => {
   if (typeof options === "string") {
@@ -58,7 +65,7 @@ export const getClassNameFactory =
 
 type FieldValue = {
   fieldId: string;
-  value: string | number | AddressType;
+  value: string | number | AddressType | HoursType;
 };
 
 const isUrl = (value: string): boolean => {
@@ -117,6 +124,72 @@ const isAddressType = (value: any): boolean => {
   return hasAllRequiredFields && hasValidOptionalFields;
 };
 
+const isIntervalType = (value: any): value is IntervalType => {
+  return (
+    value && typeof value.start === "string" && typeof value.end === "string"
+  );
+};
+
+const isDayType = (value: any): value is DayType => {
+  return (
+    value &&
+    // typeof value.isClosed === "boolean" &&
+    Array.isArray(value.openIntervals) &&
+    value.openIntervals.every(isIntervalType)
+  );
+};
+
+const isHolidayType = (value: any): value is HolidayType => {
+  return (
+    value &&
+    typeof value.date === "string" &&
+    (value.isClosed === undefined || typeof value.isClosed === "boolean") &&
+    Array.isArray(value.openIntervals) &&
+    value.openIntervals.every(isIntervalType) &&
+    typeof value.isRegularHours === "boolean"
+  );
+};
+
+const isWeekType = (value: any): value is WeekType => {
+  const weekDays = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ];
+  return weekDays.every((day) => isDayType(value[day]));
+};
+
+const isHoursType = (value: any): value is HoursType => {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  if (!isWeekType(value)) {
+    return false;
+  }
+
+  // Check 'holidayHours' only if it exists
+  // if ("holidayHours" in value) {
+  //   if (
+  //     !Array.isArray(value.holidayHours) ||
+  //     !value.holidayHours.every(isHolidayType)
+  //   ) {
+  //     return false;
+  //   }
+  // }
+
+  // Check 'reopenDate' only if it exists
+  if ("reopenDate" in value && typeof value.reopenDate !== "string") {
+    return false;
+  }
+
+  return true;
+};
+
 export const getFieldValuesList = (
   obj: Record<string, any>,
   type: EntityFieldType
@@ -124,7 +197,9 @@ export const getFieldValuesList = (
   const result: FieldValue[] = [];
 
   const processValue = (value: any, path: string) => {
-    if (type === "address" && isAddressType(value)) {
+    if (type === "hours" && isHoursType(value)) {
+      result.push({ fieldId: path, value }); // Convert the hours object to a string
+    } else if (type === "address" && isAddressType(value)) {
       console.log("address", value);
       result.push({ fieldId: path, value });
     } else if (type === "url" && typeof value === "string" && isUrl(value)) {
@@ -161,6 +236,16 @@ export const getFieldValuesList = (
   };
 
   const traverse = (currentObject: any, path: string) => {
+    // Check and process 'hours' type at the current level
+    if (type === "hours" && isHoursType(currentObject)) {
+      processValue(currentObject, path);
+    }
+    // Check and process 'address' type at the current level
+    else if (type === "address" && isAddressType(currentObject)) {
+      processValue(currentObject, path);
+    }
+
+    // Continue traversal for objects and arrays
     if (Array.isArray(currentObject)) {
       currentObject.forEach((item, index) => {
         const itemPath = `${path}[${index}]`;
@@ -170,9 +255,7 @@ export const getFieldValuesList = (
           processValue(item, itemPath);
         }
       });
-    } else if (type === "address" && isAddressType(currentObject)) {
-      processValue(currentObject, path);
-    } else {
+    } else if (typeof currentObject === "object" && currentObject !== null) {
       for (const key in currentObject) {
         if (currentObject.hasOwnProperty(key)) {
           const value = currentObject[key];
@@ -279,7 +362,8 @@ export const getEntityFieldsList = async (
 ) => {
   if (entityId === "") return [];
 
-  const response = await fetchEntityDocument("locations", entityId);
-  const entity = response.response;
+  const response = await fetchEntityDocument("location", entityId);
+
+  const entity = response.response.document;
   return getFieldValuesList(entity, fieldType);
 };

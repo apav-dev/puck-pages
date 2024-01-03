@@ -1,13 +1,15 @@
 import { ComponentConfig } from "@measured/puck";
-import { Button } from "@measured/puck";
 import { Section } from "../../components/Section";
 import styles from "./styles.module.css";
 import { getClassNameFactory } from "../../../utils/puck-utils";
 import { getEntityIdFromUrl } from "../../../utils/getEntityIdFromUrl";
 import { ImageSelector } from "../../../components/fields/ImageUrlField";
-import { TextField } from "../../../components/fields/TextField";
 import { HeadingField } from "../../../components/fields/HeadingField";
 import { EntityHeadingText } from "../../components/EntityHeadingText";
+import { SelectorField } from "../../../components/fields/SelectorField";
+import { Link, HoursType } from "@yext/pages-components";
+import { Button } from "../../components/Button";
+import { HoursStatus } from "@yext/sites-react-components";
 
 const getClassName = getClassNameFactory("Hero", styles);
 
@@ -20,7 +22,7 @@ export type HeroProps = {
     inputValue: string;
     stringFields?: { fieldId: string; value: string }[];
   };
-  description: string;
+  hours?: { fieldId?: string; value: HoursType };
   align?: string;
   padding: string;
   imageMode?: "inline" | "background";
@@ -30,7 +32,6 @@ export type HeroProps = {
     label: string;
     href: string;
     variant?: "primary" | "secondary";
-    more?: { text: string }[];
   }[];
 };
 
@@ -70,19 +71,20 @@ export const Hero: ComponentConfig<HeroProps> = {
         );
       },
     },
-    description: {
-      label: "Description",
+    hours: {
+      label: "Hours",
       type: "custom",
       render: ({ field, onChange, value, name }) => {
         const entityId = getEntityIdFromUrl();
         return (
-          <TextField
+          <SelectorField
             entityId={entityId}
             field={field}
             value={value}
             name={name}
             onChange={onChange}
-            label="Description"
+            label="Hours"
+            entityFieldType="hours"
           />
         );
       },
@@ -137,7 +139,6 @@ export const Hero: ComponentConfig<HeroProps> = {
   defaultProps: {
     // title: { value: "Title" },
     align: "left",
-    description: "Description",
     buttons: [{ label: "Learn more", href: "#" }],
     padding: "64px",
   },
@@ -145,12 +146,13 @@ export const Hero: ComponentConfig<HeroProps> = {
     title,
     subtitle,
     align,
-    description,
     buttons,
     padding,
     image,
     imageMode,
+    hours,
   }) => {
+    console.log("hours", hours);
     return (
       <Section
         padding={padding}
@@ -185,16 +187,23 @@ export const Hero: ComponentConfig<HeroProps> = {
               headingLevel="h1"
               className="text-5xl font-bold mb-4"
             />
-            {/* <p className={getClassName("subtitle")}>{description}</p> */}
-            <div className={getClassName("actions")}>
+            {hours && (
+              <div className="mb-4">
+                <HoursStatus
+                  hours={hours.value}
+                  separatorTemplate={() => (
+                    <span className="w-2 h-2 rounded-full inline-block bg-black mx-2" />
+                  )}
+                  dayOfWeekTemplate={() => null}
+                />
+              </div>
+            )}
+            <div className="flex flex-col lg:flex-row mb-4 gap-4">
               {buttons.map((button, i) => (
-                <Button
-                  key={i}
-                  href={button.href}
-                  variant={button.variant}
-                  size="large"
-                >
-                  {button.label}
+                <Button variant={button.variant} size="lg">
+                  <Link key={i} href={button.href}>
+                    {button.label}
+                  </Link>
                 </Button>
               ))}
             </div>

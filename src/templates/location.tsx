@@ -1,6 +1,7 @@
 import {
   GetPath,
   Template,
+  TemplateConfig,
   TemplateProps,
   TemplateRenderProps,
 } from "@yext/pages";
@@ -12,7 +13,7 @@ import streamConfig from "../../stream.json";
 export { transformProps } from "../layouts/location/transformProps";
 export { getHeadConfig } from "../layouts/location/getHeadConfig";
 
-export const config = {
+export const config: TemplateConfig = {
   stream: streamConfig,
 };
 

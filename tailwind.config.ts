@@ -1,5 +1,9 @@
-const { fontFamily } = require("tailwindcss/defaultTheme")
+import { fontFamily } from "tailwindcss/defaultTheme";
+import type { PluginAPI } from "tailwindcss/types/config";
+import { ButtonConfig } from "./tailwind";
+import { styleguidePlugin } from "./tailwindPlugin";
 
+// Right now, this config is a bit of a mess because it's mixing shadcn and Pages Consulting styles.
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -18,6 +22,7 @@ module.exports = {
       },
     },
     extend: {
+      // shadcn
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -52,6 +57,10 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+
+        // Pages Consulting colors
+        "brand-primary": "#1B78D0",
+        "brand-secondary": "#073866",
       },
       borderRadius: {
         lg: `var(--radius)`,
@@ -76,6 +85,32 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
+    // Pages Consulting
+    buttons: (theme: PluginAPI["theme"]): ButtonConfig => ({
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: `${theme("spacing.2")} ${theme("spacing.6")}`,
+      fontWeight: theme("fontWeight.bold"),
+      borderRadius: "50px",
+      variants: {
+        primary: {
+          backgroundColor: theme("colors.brand-primary"),
+          color: "white",
+          border: "none",
+        },
+        secondary: {
+          backgroundColor: "white",
+          color: theme("colors.brand-secondary"),
+          border: `2px solid ${theme("colors.brand-primary")}`,
+          "&:hover": {
+            backgroundColor: theme("colors.brand-secondary"),
+            color: "white",
+            border: `2px solid ${theme("colors.brand-primary")}`,
+          },
+        },
+      },
+    }),
   },
-  plugins: [require("tailwindcss-animate")],
-}
+  plugins: [require("tailwindcss-animate"), styleguidePlugin()],
+};

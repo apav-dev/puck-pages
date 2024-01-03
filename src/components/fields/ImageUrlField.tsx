@@ -49,7 +49,7 @@ export const ImageSelector = ({
   });
 
   const entityPhotosQuery = useQuery({
-    queryKey: ["entityPhotos", entityId],
+    queryKey: [`entityPhotos-${name}`, entityId],
     retry: false,
     enabled: !!entityId,
     queryFn: () => getEntityFieldsList(entityId, "image url"),

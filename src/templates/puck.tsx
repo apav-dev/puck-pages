@@ -43,17 +43,17 @@ const Puck: Template<TemplateRenderProps> = () => {
     queryKey: ["entityId", entityId],
     retry: false,
     // Just fetching the locations document for now
-    queryFn: () => fetchEntityDocument("locations", entityId),
+    queryFn: () => fetchEntityDocument("location", entityId),
     enabled: entityId !== "",
   });
 
   useEffect(() => {
     const fetchTemplateData = async () => {
       if (data) {
-        const response = await fetch(data.response.c_template.url);
+        const response = await fetch(data.response.document.c_template.url);
         const json = await response.json();
         setTemplateData(json);
-        setEntitySlug(data.response.slug);
+        setEntitySlug(data.response.document.slug);
       }
     };
     fetchTemplateData();

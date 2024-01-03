@@ -23,7 +23,7 @@ export const TextField = ({
   label,
 }: TextFieldProps) => {
   const entityQuery = useQuery({
-    queryKey: ["entity", entityId],
+    queryKey: [`entityText-${name}`, entityId],
     retry: false,
     enabled: !!entityId,
     queryFn: () => getEntityFieldsList(entityId, "string"),

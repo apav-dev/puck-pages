@@ -21,7 +21,7 @@ export const HeadingField = ({
   name,
 }: HeadingFieldProps) => {
   const entityQuery = useQuery({
-    queryKey: ["entity", entityId],
+    queryKey: [`headingField-${name}`, entityId],
     retry: false,
     enabled: !!entityId,
     queryFn: () => getEntityFieldsList(entityId, "string"),

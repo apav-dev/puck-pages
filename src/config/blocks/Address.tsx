@@ -23,6 +23,7 @@ export interface AddressProps {
 
 export const Address: ComponentConfig<AddressProps> = {
   fields: {
+    // TODO: Replace with DropdownField
     addressField: {
       label: "Address",
       type: "external",
@@ -85,7 +86,6 @@ export const Address: ComponentConfig<AddressProps> = {
     localizedRegionName,
     localizedCountryName,
   }) => {
-    console.log("addressField", addressField);
     return (
       <PagesAddressCmpt
         address={
