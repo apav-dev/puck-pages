@@ -17,11 +17,6 @@ export const transformProps = async (
 
   const injectedTemplate = injectDocumentValues(document, templateData);
 
-  console.log(
-    "injectedTemplate hero props",
-    JSON.stringify(injectedTemplate.content[0].props)
-  );
-
   return {
     ...data,
     document: { ...document, templateData: injectedTemplate },

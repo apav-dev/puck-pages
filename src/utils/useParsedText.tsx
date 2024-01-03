@@ -6,7 +6,7 @@ export const useParsedText = (text: {
 }) => {
   return useMemo(() => {
     const regex = /\[\[(.+?)\]\]/g;
-    const matches = text?.inputValue.match(regex);
+    const matches = text?.inputValue?.match(regex);
 
     if (matches && text?.stringFields) {
       let parsedText = text.inputValue;
