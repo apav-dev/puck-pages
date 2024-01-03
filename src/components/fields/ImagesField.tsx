@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { Link } from "lucide-react";
 import { FieldLabel, CustomField } from "@measured/puck";
-import { Button } from "../Button";
+import { Button } from "../shadcn/Button";
 import {
   Dialog,
   DialogContent,
@@ -9,12 +9,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../Dialog";
+} from "../shadcn/Dialog";
 import { ImageSelector } from "../ImageSelector";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form } from "../Form";
+import { Form } from "../shadcn/Form";
 import {
   DragDropContext,
   Droppable,

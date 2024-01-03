@@ -10,10 +10,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../components/Dialog";
+} from "../components/shadcn/Dialog";
 import { getEntityIdFromUrl } from "../utils/getEntityIdFromUrl";
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField } from "../components/Form";
+import { Form, FormControl, FormField } from "../components/shadcn/Form";
 import {
   Table,
   TableBody,
@@ -21,13 +21,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../components/Table";
-import { Checkbox } from "../components/Checkbox";
-import { ScrollArea } from "../components/ScrollArea";
+} from "../components/shadcn/Table";
+import { Checkbox } from "../components/shadcn/Checkbox";
+import { ScrollArea } from "../components/shadcn/ScrollArea";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckedState } from "@radix-ui/react-checkbox";
-import { Button } from "../components/Button";
+import { Button } from "../components/shadcn/Button";
 import { useToast } from "../components/useToast";
 
 export const FieldSelector = () => {
@@ -47,6 +47,7 @@ export const FieldSelector = () => {
     queryKey: ["endpoint", endpointId],
     retry: false,
     enabled: !!entityId,
+    // TODO: swap to use fetch document endpoint
     queryFn: () => fetchEndpoint(endpointId),
   });
 

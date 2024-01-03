@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { CustomField, FieldLabel } from "@measured/puck";
 import { getEntityFieldsList } from "../../utils/puck-utils";
-import { Textarea } from "../shadcn/Textarea";
+import { Input } from "../shadcn/Input";
 
-export interface TextFieldProps {
+export interface HeadingFieldProps {
   field: CustomField;
   name: string;
   value: any;
@@ -13,23 +13,21 @@ export interface TextFieldProps {
   label?: string;
 }
 
-export const TextField = ({
-  field,
-  name,
+export const HeadingField = ({
   onChange,
   value,
-  readOnly,
   entityId,
   label,
-}: TextFieldProps) => {
+  name,
+}: HeadingFieldProps) => {
   const entityQuery = useQuery({
-    queryKey: [`entityText-${name}`, entityId],
+    queryKey: [`headingField-${name}`, entityId],
     retry: false,
     enabled: !!entityId,
     queryFn: () => getEntityFieldsList(entityId, "string"),
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange({
       inputValue: e.target.value,
       stringFields: entityQuery.data ?? [],
@@ -39,7 +37,7 @@ export const TextField = ({
   return (
     <>
       <FieldLabel label={label ?? name} />
-      <Textarea value={value.inputValue} onChange={handleInputChange} />
+      <Input value={value?.inputValue} onChange={handleInputChange} />
     </>
   );
 };

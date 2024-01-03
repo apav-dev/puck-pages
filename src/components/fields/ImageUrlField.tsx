@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "../Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../shadcn/Popover";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAssets, searchPhotos } from "../../utils/api";
 import { UnsplashSearchParams } from "../../types/api";
-import { ScrollArea } from "../ScrollArea";
+import { ScrollArea } from "../shadcn/ScrollArea";
 import { SearchBar } from "../SearchBar";
 import { Link } from "lucide-react";
 import { FieldLabel, CustomField } from "@measured/puck";
-import { Button } from "../Button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../Tabs";
+import { Button } from "../shadcn/Button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../shadcn/Tabs";
 import { getEntityFieldsList } from "../../utils/puck-utils";
 
 export interface ImageSelectorProps {
@@ -49,7 +49,7 @@ export const ImageSelector = ({
   });
 
   const entityPhotosQuery = useQuery({
-    queryKey: ["entityPhotos", entityId],
+    queryKey: [`entityPhotos-${name}`, entityId],
     retry: false,
     enabled: !!entityId,
     queryFn: () => getEntityFieldsList(entityId, "image url"),

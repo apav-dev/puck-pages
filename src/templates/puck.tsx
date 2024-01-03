@@ -13,7 +13,8 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchEntityDocument } from "../utils/api";
 import { getEntityIdFromUrl } from "../utils/getEntityIdFromUrl";
-import { Toaster } from "../components/Toaster";
+import { Toaster } from "../components/shadcn/Toaster";
+import { PageContextProvider } from "../utils/usePageContext";
 
 export const getPath: GetPath<TemplateProps> = () => {
   return "puck";
@@ -42,31 +43,39 @@ const Puck: Template<TemplateRenderProps> = () => {
     queryKey: ["entityId", entityId],
     retry: false,
     // Just fetching the locations document for now
-    queryFn: () => fetchEntityDocument("locations", entityId),
+    queryFn: () => fetchEntityDocument("location", entityId),
     enabled: entityId !== "",
   });
 
   useEffect(() => {
     const fetchTemplateData = async () => {
       if (data) {
-        const response = await fetch(data.response.c_template.url);
+        const response = await fetch(data.response.document.c_template.url);
         const json = await response.json();
         setTemplateData(json);
-        setEntitySlug(data.response.slug);
+        setEntitySlug(data.response.document.slug);
       }
     };
     fetchTemplateData();
   }, [data]);
 
+  // TODO: Render a different component if no entityId
   if (templateData && entityId) {
     return (
       <>
-        <Editor
-          initialData={templateData}
-          entityId={entityId}
-          entitySlug={entitySlug}
-        />
-        <Toaster />
+        <PageContextProvider
+          value={{
+            entityId,
+            setEntityId,
+          }}
+        >
+          <Editor
+            initialData={templateData}
+            entityId={entityId}
+            entitySlug={entitySlug}
+          />
+          <Toaster />
+        </PageContextProvider>
       </>
     );
   } else {

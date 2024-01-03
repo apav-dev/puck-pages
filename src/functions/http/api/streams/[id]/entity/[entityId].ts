@@ -17,7 +17,7 @@ export default async function streams(
     case "GET":
       try {
         const response = await fetch(
-          `https://api.yext.com/v2/accounts/me/sites/${YEXT_PUBLIC_SITE_ID}/fetchentitydocument?v=20231112&entityId=${entityId}&streamId=${streamId}&locale=en&api_key=${YEXT_PUBLIC_API_KEY}`
+          `https://api.yext.com/v2/accounts/me/sites/${YEXT_PUBLIC_SITE_ID}/fetchentitydocument?v=20231112&entityId=${entityId}&templateId=${streamId}&locale=en&api_key=${YEXT_PUBLIC_API_KEY}`
         );
         const body = await response.json();
         return {

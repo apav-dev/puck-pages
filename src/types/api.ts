@@ -7,14 +7,16 @@ export interface YextResponse<T = any> {
 }
 
 export type EntityContent = {
-  c_template: {
-    mimeType: string;
-    name: string;
-    size: string;
-    url: string;
+  document: {
+    c_template: {
+      mimeType: string;
+      name: string;
+      size: string;
+      url: string;
+    };
+    slug: string;
+    id: string;
   };
-  slug: string;
-  id: string;
 };
 
 export type LocationContent = {
