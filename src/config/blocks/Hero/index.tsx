@@ -1,7 +1,10 @@
 import { ComponentConfig } from "@measured/puck";
 import { Section } from "../../components/Section";
 import styles from "./styles.module.css";
-import { getClassNameFactory } from "../../../utils/puck-utils";
+import {
+  getClassNameFactory,
+  getEntityFieldsList,
+} from "../../../utils/puck-utils";
 import { getEntityIdFromUrl } from "../../../utils/getEntityIdFromUrl";
 import { ImageSelector } from "../../../components/fields/ImageUrlField";
 import { HeadingField } from "../../../components/fields/HeadingField";
@@ -135,6 +138,11 @@ export const Hero: ComponentConfig<HeroProps> = {
       ],
     },
     padding: { type: "text" },
+  },
+  resolveData: async ({ props }, { changed }) => {
+    console.log("resolveData", props, changed);
+    const items = await getEntityFieldsList("aarons-store", "string");
+    return { props };
   },
   defaultProps: {
     // title: { value: "Title" },

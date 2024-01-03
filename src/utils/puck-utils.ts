@@ -350,9 +350,6 @@ export const injectDocumentValues = (
   //     }
   //   }
   // }
-
-  console.log("newData", newData.content[0].props.stringFields);
-
   return newData;
 };
 
