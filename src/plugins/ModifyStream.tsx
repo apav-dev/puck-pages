@@ -258,25 +258,33 @@ export const FieldSelector = () => {
   );
 };
 
-const Plugin = ({
-  children,
-  state,
-  dispatch,
-}: {
-  children: ReactNode;
-  state: AppState;
-  dispatch: (action: PuckAction) => void;
-}) => {
-  return (
-    <div>
-      {children}
-      <FieldSelector />
-    </div>
-  );
-};
+// const ModifyStreamPlugin = ({
+//   children,
+//   state,
+//   dispatch,
+// }: {
+//   children: ReactNode;
+//   state: AppState;
+//   dispatch: (action: PuckAction) => void;
+// }) => {
+//   return (
+//     <div>
+//       {children}
+//       <FieldSelector />
+//     </div>
+//   );
+// };
 
 const ModifyStreamPlugin = {
-  renderRootFields: Plugin,
+  overrides: {
+    fields: ({ children, itemSelector }) => (
+      <>
+        {children}
+
+        <FieldSelector />
+      </>
+    ),
+  },
 };
 
 export default ModifyStreamPlugin;

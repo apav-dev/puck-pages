@@ -298,7 +298,7 @@ export const getValueByPath = (obj: any, path: string): string => {
     }
   }
 
-  return current !== null ? String(current) : ""; // Convert to string, handling null values
+  return current !== null ? current : ""; // Convert to string, handling null values
 };
 
 type WithPuckProps<Props> = Props & {
@@ -343,13 +343,14 @@ export const injectDocumentValues = (
   processContent(newData.content);
 
   // Process zones if they exist
-  // if (newData.zones) {
-  //   for (const zoneKey in newData.zones) {
-  //     if (newData.zones.hasOwnProperty(zoneKey)) {
-  //       processContent(newData.zones[zoneKey]);
-  //     }
-  //   }
-  // }
+  if (newData.zones) {
+    for (const zoneKey in newData.zones) {
+      if (newData.zones.hasOwnProperty(zoneKey)) {
+        processContent(newData.zones[zoneKey]);
+      }
+    }
+  }
+
   return newData;
 };
 

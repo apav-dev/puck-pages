@@ -1,9 +1,8 @@
-import { Puck } from "@measured/puck";
+import { Button, Puck, usePuck } from "@measured/puck";
 import type { Data } from "@measured/puck";
 import config from "../config";
 import { useToast } from "../components/useToast";
 import { ToastAction } from "../components/shadcn/Toast";
-import Unsplash from "../plugins/Unsplash";
 
 import "@measured/puck/dist/index.css";
 import ModifyStreamPlugin from "../plugins/ModifyStream";
@@ -15,6 +14,8 @@ export interface EditorProps {
 }
 
 export const Editor = ({ initialData, entityId, entitySlug }: EditorProps) => {
+  const { appState } = usePuck();
+
   const { toast } = useToast();
 
   const handlePublish = async (data: Data) => {
@@ -30,7 +31,10 @@ export const Editor = ({ initialData, entityId, entitySlug }: EditorProps) => {
         title: "Success",
         description: `Your changes have been published.`,
         action: (
-          <ToastAction altText="Try again" className="hover:bg-slate-100">
+          <ToastAction
+            altText="Successful Publish"
+            className="hover:bg-slate-100"
+          >
             <a
               href={`/${entitySlug}`}
               target="_blank"
@@ -49,12 +53,66 @@ export const Editor = ({ initialData, entityId, entitySlug }: EditorProps) => {
     }
   };
 
+  const handleCreateSuggestion = async () => {
+    try {
+      const resp = await fetch(`/api/entity/${entityId}/suggestion`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ c_template: appState.data }),
+      });
+      if (resp.ok) {
+        const respJson = await resp.json();
+        const suggestionId = respJson.response.id;
+        toast({
+          title: "Success",
+          description: `Your changes have been suggested.`,
+          action: (
+            <ToastAction altText="Try again" className="hover:bg-slate-100">
+              <a
+                href={`https://www.yext.com/s/3828375/suggestions/edit?ids=${suggestionId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View Suggestion
+              </a>
+            </ToastAction>
+          ),
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Something went wrong",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+      });
+    }
+  };
+
   return (
     <Puck
       config={config}
       data={initialData}
       onPublish={handlePublish}
-      plugins={[Unsplash, ModifyStreamPlugin]}
+      plugins={[ModifyStreamPlugin]}
+      overrides={{
+        headerActions: ({ children }) => (
+          <>
+            {children}
+            <div>
+              <Button onClick={handleCreateSuggestion} variant="secondary">
+                Create Suggestion
+              </Button>
+            </div>
+          </>
+        ),
+      }}
     />
   );
 };

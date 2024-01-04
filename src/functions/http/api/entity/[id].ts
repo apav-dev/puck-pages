@@ -69,7 +69,7 @@ const updateEntity = async (
 
   if (entityBody.c_template) {
     const publicFileUrl = await createCloudflareObject(
-      entityId,
+      `template-${entityId}`,
       entityBody.c_template
     );
 
@@ -98,7 +98,7 @@ const updateEntity = async (
     };
   } else {
     console.log("Entity updated:", resp);
-    await deleteCloudflareObject(entityId);
+    await deleteCloudflareObject(`template-${entityId}`);
     return {
       body: JSON.stringify(resp),
       headers: {},
@@ -107,11 +107,11 @@ const updateEntity = async (
   }
 };
 
-const createCloudflareObject = async (
-  entityId: string,
+export const createCloudflareObject = async (
+  cloudflareId: string,
   object: Record<string, any>
 ): Promise<string> => {
-  const requestStr = `${CLOUDFLARE_WORKER_URL}/template-${entityId}`;
+  const requestStr = `${CLOUDFLARE_WORKER_URL}/${cloudflareId}`;
   const resp = await fetch(requestStr, {
     method: "PUT",
     headers: {
@@ -129,8 +129,10 @@ const createCloudflareObject = async (
   }
 };
 
-const deleteCloudflareObject = async (entityId: string): Promise<void> => {
-  const requestStr = `${CLOUDFLARE_WORKER_URL}/template-${entityId}`;
+export const deleteCloudflareObject = async (
+  cloudflareId: string
+): Promise<void> => {
+  const requestStr = `${CLOUDFLARE_WORKER_URL}/template-${cloudflareId}`;
   const resp = await fetch(requestStr, {
     method: "DELETE",
   });

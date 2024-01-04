@@ -139,11 +139,6 @@ export const Hero: ComponentConfig<HeroProps> = {
     },
     padding: { type: "text" },
   },
-  resolveData: async ({ props }, { changed }) => {
-    console.log("resolveData", props, changed);
-    const items = await getEntityFieldsList("aarons-store", "string");
-    return { props };
-  },
   defaultProps: {
     // title: { value: "Title" },
     align: "left",
@@ -160,7 +155,6 @@ export const Hero: ComponentConfig<HeroProps> = {
     imageMode,
     hours,
   }) => {
-    console.log("hours", hours);
     return (
       <Section
         padding={padding}

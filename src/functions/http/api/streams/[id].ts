@@ -224,7 +224,7 @@ const kvRequest = async (
   }
 };
 
-const redis = {
+export const redis = {
   set: async (key: string, value: string): Promise<KVResponse> => {
     return await kvRequest("PUT", "set", key, value);
   },
