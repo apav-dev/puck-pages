@@ -14,8 +14,6 @@ export interface EditorProps {
 }
 
 export const Editor = ({ initialData, entityId, entitySlug }: EditorProps) => {
-  const { appState } = usePuck();
-
   const { toast } = useToast();
 
   const handlePublish = async (data: Data) => {
@@ -53,14 +51,14 @@ export const Editor = ({ initialData, entityId, entitySlug }: EditorProps) => {
     }
   };
 
-  const handleCreateSuggestion = async () => {
+  const handleCreateSuggestion = async (data: Data) => {
     try {
       const resp = await fetch(`/api/entity/${entityId}/suggestion`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ c_template: appState.data }),
+        body: JSON.stringify({ c_template: data }),
       });
       if (resp.ok) {
         const respJson = await resp.json();
@@ -102,16 +100,23 @@ export const Editor = ({ initialData, entityId, entitySlug }: EditorProps) => {
       onPublish={handlePublish}
       plugins={[ModifyStreamPlugin]}
       overrides={{
-        headerActions: ({ children }) => (
-          <>
-            {children}
-            <div>
-              <Button onClick={handleCreateSuggestion} variant="secondary">
-                Create Suggestion
-              </Button>
-            </div>
-          </>
-        ),
+        headerActions: ({ children }) => {
+          const { appState } = usePuck();
+          console.log(appState.data);
+          return (
+            <>
+              {children}
+              <div>
+                <Button
+                  onClick={() => handleCreateSuggestion(appState.data)}
+                  variant="secondary"
+                >
+                  Create Suggestion
+                </Button>
+              </div>
+            </>
+          );
+        },
       }}
     />
   );
