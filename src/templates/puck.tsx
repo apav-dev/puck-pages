@@ -50,8 +50,13 @@ const Puck: Template<TemplateRenderProps> = () => {
   useEffect(() => {
     const fetchTemplateData = async () => {
       if (data) {
-        const response = await fetch(data.response.document.c_template.url);
+        debugger;
+        // TODO: Handle case where there is no linked template
+        const jsonUrl =
+          data.response.document.c_linkedTemplate?.[0].c_template?.url;
+        const response = await fetch(jsonUrl);
         const json = await response.json();
+
         setTemplateData(json);
         setEntitySlug(data.response.document.slug);
       }

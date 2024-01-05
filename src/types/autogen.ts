@@ -1,5 +1,3 @@
-import type { Data } from "@measured/puck";
-
 export interface Address {
   line1?: string;
   line2?: string;
@@ -12,13 +10,38 @@ export interface Address {
   countryCode?: string;
 }
 
-export interface Locations {
-  id: string;
-  name: string;
-  slug: string;
-  address: Address;
-  c_template?: any;
-  templateData?: Data;
+export interface Interval {
+  start: any;
+  end: any;
+}
+
+export interface DayHour {
+  openIntervals?: Interval[];
+  isClosed?: boolean;
+}
+
+export interface HolidayHours {
+  date: string;
+  openIntervals?: Interval[];
+  isClosed?: boolean;
+  isRegularHours?: boolean;
+}
+
+export interface Hours {
+  monday?: DayHour;
+  tuesday?: DayHour;
+  wednesday?: DayHour;
+  thursday?: DayHour;
+  friday?: DayHour;
+  saturday?: DayHour;
+  sunday?: DayHour;
+  holidayHours?: HolidayHours[];
+  reopenDate?: string;
+}
+
+export interface Coordinate {
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface ImageThumbnail {
@@ -42,22 +65,22 @@ export interface ComplexImage {
   clickthroughUrl?: string;
 }
 
-export interface Blogs {
-  id: string;
-  name: string;
-  datePosted: string;
-  slug: string;
-  blogStarter_coverPhoto: ComplexImage;
-  blogStarter_body: any;
-  blogStarter_description: string;
-  blogStarter_metaDescription: string;
-  blogStarter_keywords: string;
-  blogStarter_blogAuthor: string;
-  c_premium: boolean;
+export interface C_linkedTemplate {
+  c_template?: any;
 }
 
-export interface FinPro {
+export interface Locations {
   id: string;
+  additionalHoursText: string;
+  address: Address;
+  description: string;
+  hours: Hours;
   name: string;
+  cityCoordinate: Coordinate;
+  photoGallery: ComplexImage[];
+  geocodedCoordinate: Coordinate;
+  mainPhone: any;
+  emails: string[];
   slug: string;
+  c_linkedTemplate: C_linkedTemplate[];
 }

@@ -8,11 +8,14 @@ export const transformProps = async (
 ) => {
   const { document } = data;
 
-  if (!document.c_template) {
+  console.log("transformProps", document);
+
+  if (!document.c_linkedTemplate?.[0].c_template?.url) {
     return data;
   }
 
-  const response = await fetch(document.c_template.url);
+  const jsonUrl = document.c_linkedTemplate?.[0].c_template?.url;
+  const response = await fetch(jsonUrl);
   const templateData: Data = await response.json();
 
   const injectedTemplate = injectDocumentValues(document, templateData);

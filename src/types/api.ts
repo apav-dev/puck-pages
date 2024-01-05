@@ -1,3 +1,5 @@
+import { Locations as LocationsType } from "./autogen";
+
 export interface YextResponse<T = any> {
   meta: {
     uuid: string;
@@ -7,16 +9,7 @@ export interface YextResponse<T = any> {
 }
 
 export type EntityContent = {
-  document: {
-    c_template: {
-      mimeType: string;
-      name: string;
-      size: string;
-      url: string;
-    };
-    slug: string;
-    id: string;
-  };
+  document: LocationsType;
 };
 
 export type LocationContent = {

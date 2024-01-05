@@ -14,7 +14,26 @@ export { transformProps } from "../layouts/location/transformProps";
 export { getHeadConfig } from "../layouts/location/getHeadConfig";
 
 export const config: TemplateConfig = {
-  stream: streamConfig,
+  stream: {
+    $id: "locations",
+    fields: [
+      "id",
+      "additionalHoursText",
+      "address",
+      "description",
+      "hours",
+      "name",
+      "cityCoordinate",
+      "photoGallery",
+      "geocodedCoordinate",
+      "mainPhone",
+      "emails",
+      "slug",
+      "c_linkedTemplate.c_template",
+    ],
+    filter: { entityTypes: ["location"] },
+    localization: { locales: ["en"] },
+  },
 };
 
 export const getPath: GetPath<TemplateProps> = ({ document }) => {
