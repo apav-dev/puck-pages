@@ -66,6 +66,7 @@ export interface ComplexImage {
 }
 
 export interface C_linkedTemplate {
+  id: string;
   c_template?: any;
 }
 

@@ -38,6 +38,8 @@ const Puck: Template<TemplateRenderProps> = () => {
   const [entityId, setEntityId] = useState<string>("");
   const [templateData, setTemplateData] = useState<any>();
   const [entitySlug, setEntitySlug] = useState<string | undefined>();
+  const [linkedTemplateEntityId, setLinkedTemplateEntityId] =
+    useState<string>("");
 
   useEffect(() => {
     setEntityId(getEntityIdFromUrl());
@@ -55,8 +57,11 @@ const Puck: Template<TemplateRenderProps> = () => {
     const fetchTemplateData = async () => {
       if (data) {
         // TODO: Handle case where there is no linked template
-        const jsonUrl =
-          data.response.document.c_linkedTemplate?.[0].c_template?.url;
+        const linkedTemplateEntity =
+          data.response.document.c_linkedTemplate?.[0];
+        const jsonUrl = linkedTemplateEntity.c_template?.url;
+        const linkedId = linkedTemplateEntity.id;
+        setLinkedTemplateEntityId(linkedId);
         const response = await fetch(jsonUrl);
         const json = await response.json();
 

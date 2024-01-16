@@ -29,6 +29,7 @@ export const config: TemplateConfig = {
       "mainPhone",
       "emails",
       "slug",
+      "c_linkedTemplate.id",
       "c_linkedTemplate.c_template",
     ],
     filter: { entityTypes: ["location"] },
