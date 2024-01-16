@@ -10,15 +10,20 @@ import ModifyStreamPlugin from "../plugins/ModifyStream";
 export interface EditorProps {
   initialData: Data;
   entityId: string;
-  templateId: string;
+  linkedTemplateEntityId: string;
   entitySlug?: string;
 }
 
-export const Editor = ({ initialData, entityId, entitySlug }: EditorProps) => {
+export const Editor = ({
+  initialData,
+  entityId,
+  entitySlug,
+  linkedTemplateEntityId,
+}: EditorProps) => {
   const { toast } = useToast();
 
   const handlePublish = async (data: Data) => {
-    const resp = await fetch(`/api/entity/${entityId}`, {
+    const resp = await fetch(`/api/entity/${linkedTemplateEntityId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -54,13 +59,16 @@ export const Editor = ({ initialData, entityId, entitySlug }: EditorProps) => {
 
   const handleCreateSuggestion = async (data: Data) => {
     try {
-      const resp = await fetch(`/api/entity/${entityId}/suggestion`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ c_template: data }),
-      });
+      const resp = await fetch(
+        `/api/entity/${linkedTemplateEntityId}/suggestion`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ c_template: data }),
+        }
+      );
       if (resp.ok) {
         const respJson = await resp.json();
         const suggestionId = respJson.response.id;

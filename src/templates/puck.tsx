@@ -56,7 +56,7 @@ const Puck: Template<TemplateRenderProps> = () => {
   useEffect(() => {
     const fetchTemplateData = async () => {
       if (data) {
-        // TODO: Handle case where there is no linked template
+        // TODO: Handle case where fields are missing
         const linkedTemplateEntity =
           data.response.document.c_linkedTemplate?.[0];
         const jsonUrl = linkedTemplateEntity.c_template?.url;
@@ -86,7 +86,7 @@ const Puck: Template<TemplateRenderProps> = () => {
             initialData={templateData}
             entityId={entityId}
             entitySlug={entitySlug}
-            templateId={templateId}
+            linkedTemplateEntityId={linkedTemplateEntityId}
           />
           <Toaster />
         </PageContextProvider>
