@@ -8,11 +8,13 @@ import {
 } from "../types/api";
 
 export const fetchEntityDocument = async (
-  streamId: string,
+  templateId: string,
   entityId: string
 ): Promise<YextResponse<EntityContent>> => {
   try {
-    const response = await fetch(`/api/streams/${streamId}/entity/${entityId}`);
+    const response = await fetch(
+      `/api/streams/${templateId}/entity/${entityId}/fetchentitydocument`
+    );
     const body = await response.json();
     return body;
   } catch (error) {

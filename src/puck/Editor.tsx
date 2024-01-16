@@ -10,6 +10,7 @@ import ModifyStreamPlugin from "../plugins/ModifyStream";
 export interface EditorProps {
   initialData: Data;
   entityId: string;
+  templateId: string;
   entitySlug?: string;
 }
 

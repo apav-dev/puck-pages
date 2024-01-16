@@ -1,7 +1,6 @@
 import { ComponentConfig } from "@measured/puck";
 import { FaPhone } from "react-icons/fa";
 import { getEntityFieldsList } from "../../utils/puck-utils";
-import { getEntityIdFromUrl } from "../../utils/getEntityIdFromUrl";
 
 export interface PhoneNumberProps {
   label: string;
@@ -20,8 +19,7 @@ export const PhoneNumber: ComponentConfig<PhoneNumberProps> = {
       type: "external",
       getItemSummary: (item, i) => item?.fieldId || `Phone Number #${i}`,
       fetchList: async () => {
-        const entityId = getEntityIdFromUrl();
-        const fields = await getEntityFieldsList(entityId, "phone number");
+        const fields = await getEntityFieldsList("phone number");
         return fields;
       },
     },
@@ -42,10 +40,8 @@ export const PhoneNumber: ComponentConfig<PhoneNumberProps> = {
       },
     };
 
-    const entityId = getEntityIdFromUrl();
-
     if (changed.phoneNumberField) {
-      const fields = await getEntityFieldsList(entityId, "phone number");
+      const fields = await getEntityFieldsList("phone number");
       const field = fields.find(
         (field) => field.fieldId === props.phoneNumberField?.fieldId
       );

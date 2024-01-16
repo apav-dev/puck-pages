@@ -52,7 +52,7 @@ export const ImageSelector = ({
     queryKey: [`entityPhotos-${name}`, entityId],
     retry: false,
     enabled: !!entityId,
-    queryFn: () => getEntityFieldsList(entityId, "image url"),
+    queryFn: () => getEntityFieldsList("image url"),
   });
 
   const handleSearchClick = (value: string) => {

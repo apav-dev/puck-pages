@@ -1,12 +1,20 @@
 import { SitesHttpRequest, SitesHttpResponse } from "@yext/pages/*";
 
-export default async function streams(
+export default async function entityDocument(
   request: SitesHttpRequest
 ): Promise<SitesHttpResponse> {
   const { method, pathParams } = request;
-  const streamId = pathParams.id;
+
+  // required params
+  const templateId = pathParams.templateId;
   const entityId = pathParams.entityId;
-  if (!streamId) {
+
+  // optional params
+  const suggestionIds = pathParams.suggestionIds;
+  const locale = pathParams.locale;
+  const deploymentId = pathParams.deploymentId;
+
+  if (!templateId) {
     return { body: "Missing stream id", headers: {}, statusCode: 400 };
   }
   if (!entityId) {
@@ -16,9 +24,18 @@ export default async function streams(
   switch (method) {
     case "GET":
       try {
-        const response = await fetch(
-          `https://api.yext.com/v2/accounts/me/sites/${YEXT_PUBLIC_SITE_ID}/fetchentitydocument?v=20231112&entityId=${entityId}&templateId=${streamId}&locale=en&api_key=${YEXT_PUBLIC_API_KEY}`
-        );
+        let requestPath = `https://api.yext.com/v2/accounts/me/sites/${YEXT_PUBLIC_SITE_ID}/fetchentitydocument?v=20231112&entityId=${entityId}&templateId=${templateId}&locale=en&api_key=${YEXT_PUBLIC_API_KEY}`;
+        if (suggestionIds) {
+          requestPath += `&editIds=${suggestionIds}`;
+        }
+        if (locale) {
+          requestPath += `&locale=${locale}`;
+        }
+        if (deploymentId) {
+          requestPath += `&deploymentId=${deploymentId}`;
+        }
+        console.log("requestPath: ", requestPath);
+        const response = await fetch(requestPath);
         const body = await response.json();
         return {
           body: JSON.stringify(body),

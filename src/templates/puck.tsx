@@ -15,6 +15,7 @@ import { fetchEntityDocument } from "../utils/api";
 import { getEntityIdFromUrl } from "../utils/getEntityIdFromUrl";
 import { Toaster } from "../components/shadcn/Toaster";
 import { PageContextProvider } from "../utils/usePageContext";
+import { getTemplateIdFromUrl } from "../utils/getTemplateIdFromUrl";
 
 export const getPath: GetPath<TemplateProps> = () => {
   return "puck";
@@ -30,27 +31,29 @@ export const getHeadConfig: GetHeadConfig<
   };
 };
 
+// TODO: Fetch config JSON via template ID rather than entity id in path, hard code entity id for now
+// TODO: eventually add the ability to toggle entity id in the editor. Used list of linked entities
 const Puck: Template<TemplateRenderProps> = () => {
-  const [entityId, setEntityId] = useState<string | undefined>();
+  const [templateId, setTemplateId] = useState<string>("");
+  const [entityId, setEntityId] = useState<string>("");
   const [templateData, setTemplateData] = useState<any>();
   const [entitySlug, setEntitySlug] = useState<string | undefined>();
 
   useEffect(() => {
     setEntityId(getEntityIdFromUrl());
+    setTemplateId(getTemplateIdFromUrl());
   }, []);
 
   const { data, isSuccess } = useQuery({
     queryKey: ["entityId", entityId],
     retry: false,
-    // Just fetching the locations document for now
-    queryFn: () => fetchEntityDocument("location", entityId),
-    enabled: entityId !== "",
+    queryFn: () => fetchEntityDocument(templateId, entityId),
+    enabled: entityId !== "" && templateId !== "",
   });
 
   useEffect(() => {
     const fetchTemplateData = async () => {
       if (data) {
-        debugger;
         // TODO: Handle case where there is no linked template
         const jsonUrl =
           data.response.document.c_linkedTemplate?.[0].c_template?.url;
@@ -65,7 +68,7 @@ const Puck: Template<TemplateRenderProps> = () => {
   }, [data]);
 
   // TODO: Render a different component if no entityId
-  if (templateData && entityId) {
+  if (templateData && entityId && templateId) {
     return (
       <>
         <PageContextProvider
@@ -78,6 +81,7 @@ const Puck: Template<TemplateRenderProps> = () => {
             initialData={templateData}
             entityId={entityId}
             entitySlug={entitySlug}
+            templateId={templateId}
           />
           <Toaster />
         </PageContextProvider>

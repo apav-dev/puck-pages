@@ -42,11 +42,10 @@ export const SelectorField = ({
     queryKey: [`entitySelector-${name}`, entityId],
     retry: false,
     enabled: !!entityId,
-    queryFn: () => getEntityFieldsList(entityId, entityFieldType),
+    queryFn: () => getEntityFieldsList(entityFieldType),
   });
 
   const handleInputChange = (e: Event) => {
-    // debugger;
     const fieldId = e.target?.textContent;
     onChange({
       fieldId,

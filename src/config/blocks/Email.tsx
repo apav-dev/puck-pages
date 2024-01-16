@@ -18,7 +18,7 @@ export const Email: ComponentConfig<EmailProps> = {
       getItemSummary: (item) => item?.fieldId || "Select an Email Field",
       fetchList: async () => {
         const entityId = getEntityIdFromUrl();
-        const fields = await getEntityFieldsList(entityId, "email");
+        const fields = await getEntityFieldsList("email");
         return fields;
       },
     },
@@ -35,10 +35,8 @@ export const Email: ComponentConfig<EmailProps> = {
       },
     };
 
-    const entityId = getEntityIdFromUrl();
-
     if (changed.emailField) {
-      const fields = await getEntityFieldsList(entityId, "email");
+      const fields = await getEntityFieldsList("email");
       const emailField = fields.find(
         (field) => field.fieldId === props.emailField?.fieldId
       );

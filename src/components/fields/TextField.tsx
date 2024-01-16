@@ -26,7 +26,7 @@ export const TextField = ({
     queryKey: [`entityText-${name}`, entityId],
     retry: false,
     enabled: !!entityId,
-    queryFn: () => getEntityFieldsList(entityId, "string"),
+    queryFn: () => getEntityFieldsList("string"),
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

@@ -30,7 +30,7 @@ export const Address: ComponentConfig<AddressProps> = {
       getItemSummary: (item, i) => item?.fieldId || `Address #${i}`,
       fetchList: async () => {
         const entityId = getEntityIdFromUrl();
-        const fields = await getEntityFieldsList(entityId, "address");
+        const fields = await getEntityFieldsList("address");
         return fields;
       },
     },
@@ -58,10 +58,8 @@ export const Address: ComponentConfig<AddressProps> = {
       props: { ...props },
     };
 
-    const entityId = getEntityIdFromUrl();
-
     if (changed.addressField) {
-      const fields = await getEntityFieldsList(entityId, "address");
+      const fields = await getEntityFieldsList("address");
       const field = fields.find(
         (field) => field.fieldId === props.addressField?.fieldId
       );

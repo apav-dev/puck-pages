@@ -10,6 +10,8 @@ import {
   IntervalType,
   WeekType,
 } from "@yext/pages-components";
+import { getEntityIdFromUrl } from "./getEntityIdFromUrl";
+import { getTemplateIdFromUrl } from "./getTemplateIdFromUrl";
 
 export const getGlobalClassName = (rootClass, options) => {
   if (typeof options === "string") {
@@ -354,13 +356,14 @@ export const injectDocumentValues = (
   return newData;
 };
 
-export const getEntityFieldsList = async (
-  entityId: string,
-  fieldType: EntityFieldType
-) => {
-  if (entityId === "") return [];
+export const getEntityFieldsList = async (fieldType: EntityFieldType) => {
+  const entityId = getEntityIdFromUrl();
+  const templateId = getTemplateIdFromUrl();
 
-  const response = await fetchEntityDocument("location", entityId);
+  if (!entityId || !templateId || entityId === "" || templateId === "")
+    return [];
+
+  const response = await fetchEntityDocument(templateId, entityId);
 
   const entity = response.response.document;
   return getFieldValuesList(entity, fieldType);

@@ -1,10 +1,7 @@
 import { ComponentConfig } from "@measured/puck";
 import { Section } from "../../components/Section";
 import styles from "./styles.module.css";
-import {
-  getClassNameFactory,
-  getEntityFieldsList,
-} from "../../../utils/puck-utils";
+import { getClassNameFactory } from "../../../utils/puck-utils";
 import { getEntityIdFromUrl } from "../../../utils/getEntityIdFromUrl";
 import { ImageSelector } from "../../../components/fields/ImageUrlField";
 import { HeadingField } from "../../../components/fields/HeadingField";
