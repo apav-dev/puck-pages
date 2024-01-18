@@ -30,6 +30,7 @@ export const config: TemplateConfig = {
       "emails",
       "slug",
       "c_linkedTemplate.id",
+      "c_linkedTemplate.name",
       "c_linkedTemplate.c_template",
     ],
     filter: { entityTypes: ["location"] },
