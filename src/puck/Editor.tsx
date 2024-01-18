@@ -4,26 +4,20 @@ import config from "../config";
 import { useToast } from "../components/useToast";
 import { ToastAction } from "../components/shadcn/Toast";
 
-import "@measured/puck/dist/index.css";
+// import "@measured/puck/dist/index.css";
 import ModifyStreamPlugin from "../plugins/ModifyStream";
+import { Header } from "../components/puck-overrides/Header";
+import { useEditorContext } from "../utils/useEditorContext";
 
-export interface EditorProps {
-  initialData: Data;
-  entityId: string;
-  linkedTemplateEntityId: string;
-  entitySlug?: string;
-}
+export interface EditorProps {}
 
-export const Editor = ({
-  initialData,
-  entityId,
-  entitySlug,
-  linkedTemplateEntityId,
-}: EditorProps) => {
+export const Editor = ({}: EditorProps) => {
   const { toast } = useToast();
 
+  const { linkedTemplateEntity, entitySlug, entityId } = useEditorContext();
+
   const handlePublish = async (data: Data) => {
-    const resp = await fetch(`/api/entity/${linkedTemplateEntityId}`, {
+    const resp = await fetch(`/api/entity/${linkedTemplateEntity.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -60,7 +54,7 @@ export const Editor = ({
   const handleCreateSuggestion = async (data: Data) => {
     try {
       const resp = await fetch(
-        `/api/entity/${linkedTemplateEntityId}/suggestion`,
+        `/api/entity/${linkedTemplateEntity.id}/suggestion`,
         {
           method: "POST",
           headers: {
@@ -105,13 +99,19 @@ export const Editor = ({
   return (
     <Puck
       config={config}
-      data={initialData}
+      data={linkedTemplateEntity.template}
       onPublish={handlePublish}
       plugins={[ModifyStreamPlugin]}
       overrides={{
+        header: ({ actions }) => (
+          <Header
+            actions={actions}
+            entityId={entityId}
+            templateName={linkedTemplateEntity.name}
+          />
+        ),
         headerActions: ({ children }) => {
           const { appState } = usePuck();
-          console.log(appState.data);
           return (
             <>
               {children}

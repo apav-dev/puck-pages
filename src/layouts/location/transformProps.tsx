@@ -8,8 +8,6 @@ export const transformProps = async (
 ) => {
   const { document } = data;
 
-  console.log("transformProps", document);
-
   if (!document.c_linkedTemplate?.[0].c_template?.url) {
     return data;
   }

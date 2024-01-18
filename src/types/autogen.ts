@@ -67,7 +67,11 @@ export interface ComplexImage {
 
 export interface C_linkedTemplate {
   id: string;
+  name: string;
   c_template?: any;
+  c_linkedEntities: {
+    id: string;
+  }[];
 }
 
 export interface Locations {
