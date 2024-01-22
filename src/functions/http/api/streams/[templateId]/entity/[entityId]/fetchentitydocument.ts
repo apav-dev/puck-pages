@@ -34,7 +34,6 @@ export default async function entityDocument(
         if (deploymentId) {
           requestPath += `&deploymentId=${deploymentId}`;
         }
-        console.log("requestPath: ", requestPath);
         const response = await fetch(requestPath);
         const body = await response.json();
         return {

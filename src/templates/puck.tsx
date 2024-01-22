@@ -9,13 +9,14 @@ import {
   TemplateRenderProps,
 } from "@yext/pages";
 import { Editor } from "../puck/Editor";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchEntityDocument } from "../utils/api";
 import { getEntityIdFromUrl } from "../utils/getEntityIdFromUrl";
 import { Toaster } from "../components/shadcn/Toaster";
 import { EditorContextProvider } from "../utils/useEditorContext";
 import { getTemplateIdFromUrl } from "../utils/getTemplateIdFromUrl";
+import { Main } from "../layouts/main";
 
 export const getPath: GetPath<TemplateProps> = () => {
   return "puck";
@@ -38,9 +39,9 @@ export interface LinkedTemplateEntity {
   linkedEntityIds: string[];
 }
 
-// TODO: Fetch config JSON via template ID rather than entity id in path, hard code entity id for now
-// TODO: eventually add the ability to toggle entity id in the editor. Used list of linked entities
 const Puck: Template<TemplateRenderProps> = (props) => {
+  const hasMounted = useRef(false);
+
   const [templateId, setTemplateId] = useState<string>("");
   const [entityId, setEntityId] = useState<string>("");
   const [entitySlug, setEntitySlug] = useState<string>("");
@@ -52,7 +53,17 @@ const Puck: Template<TemplateRenderProps> = (props) => {
     setTemplateId(getTemplateIdFromUrl());
   }, []);
 
-  const { data, isSuccess } = useQuery({
+  useEffect(() => {
+    if (hasMounted.current) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("entityId", entityId);
+      window.history.replaceState({}, "", url.toString());
+    } else {
+      hasMounted.current = true;
+    }
+  }, [entityId]);
+
+  const { data } = useQuery({
     queryKey: ["entityId", entityId],
     retry: false,
     queryFn: () => fetchEntityDocument(templateId, entityId),
@@ -62,7 +73,6 @@ const Puck: Template<TemplateRenderProps> = (props) => {
   useEffect(() => {
     const fetchTemplateData = async () => {
       if (data) {
-        console.log(data);
         setEntitySlug(data.response.document.slug);
 
         // TODO: Handle case where fields are missing
@@ -101,8 +111,10 @@ const Puck: Template<TemplateRenderProps> = (props) => {
             setLinkedTemplateEntity,
           }}
         >
-          <Editor />
-          <Toaster />
+          <Main data={{}}>
+            <Editor />
+            <Toaster />
+          </Main>
         </EditorContextProvider>
       </>
     );

@@ -45,7 +45,8 @@ export const getPath: GetPath<TemplateProps> = ({ document }) => {
 
 // Initialize the configuration asynchronously
 const Location: Template<TemplateRenderProps<LocationsType>> = (data) => {
-  return <LocationLayout {...data} />;
+  // return <LocationLayout {...data} />;
+  return <>{JSON.stringify(data.document.templateData)}</>;
 };
 
 export default Location;

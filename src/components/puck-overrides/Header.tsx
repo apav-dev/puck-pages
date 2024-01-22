@@ -1,4 +1,4 @@
-import { usePuck } from "@measured/puck";
+import { resolveAllData, usePuck } from "@measured/puck";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,22 +7,32 @@ import {
   DropdownMenuTrigger,
 } from "../shadcn/Dropdown";
 import { Button } from "../shadcn/Button";
-import { useState } from "react";
+import { useEffect } from "react";
 import { useEditorContext } from "../../utils/useEditorContext";
+import config from "../../config";
 
 type HeaderProps = {
   templateName?: string;
   actions?: React.ReactNode;
-  entityId?: string;
 };
 
-// TODO: see if I can add the option to go forward and back in the editor
-const Header = ({ actions, templateName, entityId }: HeaderProps) => {
-  const { appState } = usePuck();
-  const [position, setPosition] = useState("bottom");
-  const { linkedTemplateEntity } = useEditorContext();
+const Header = ({ actions, templateName }: HeaderProps) => {
+  const { appState, dispatch } = usePuck();
+  const { linkedTemplateEntity, setEntityId, entityId } = useEditorContext();
 
-  console.log(appState);
+  const handleEntityIdChange = (entityId: string) => {
+    setEntityId(entityId);
+  };
+
+  useEffect(() => {
+    resolveAllData(linkedTemplateEntity.template, config).then((data) => {
+      dispatch({
+        type: "setData",
+        data,
+      });
+    });
+  }, [entityId]);
+
   return (
     <div
       style={{ gridArea: "header" }}
@@ -77,8 +87,8 @@ const Header = ({ actions, templateName, entityId }: HeaderProps) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
               <DropdownMenuRadioGroup
-                value={position}
-                onValueChange={setPosition}
+                value={entityId}
+                onValueChange={handleEntityIdChange}
               >
                 {linkedTemplateEntity?.linkedEntityIds.map((entityId) => (
                   <DropdownMenuRadioItem value={entityId}>

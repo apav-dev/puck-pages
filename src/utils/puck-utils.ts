@@ -9,6 +9,8 @@ import {
   HoursType,
   IntervalType,
   WeekType,
+  ImageType,
+  ComplexImageType,
 } from "@yext/pages-components";
 import { getEntityIdFromUrl } from "./getEntityIdFromUrl";
 import { getTemplateIdFromUrl } from "./getTemplateIdFromUrl";
@@ -67,7 +69,13 @@ export const getClassNameFactory =
 
 type FieldValue = {
   fieldId: string;
-  value: string | number | AddressType | HoursType;
+  value:
+    | string
+    | number
+    | AddressType
+    | HoursType
+    | ImageType
+    | ComplexImageType;
 };
 
 const isUrl = (value: string): boolean => {
@@ -81,6 +89,44 @@ const isUrl = (value: string): boolean => {
     "i"
   ); // fragment locator
   return !!urlPattern.test(value);
+};
+
+const isThumbnailType = (value: any): boolean => {
+  return (
+    value &&
+    typeof value.height === "number" &&
+    typeof value.width === "number" &&
+    typeof value.url === "string"
+  );
+};
+
+const isImageType = (value: any): boolean => {
+  return (
+    value &&
+    (value.alternateText === undefined ||
+      typeof value.alternateText === "string") &&
+    typeof value.height === "number" &&
+    typeof value.width === "number" &&
+    typeof value.url === "string"
+  );
+};
+
+const isComplexImageType = (value: any): boolean => {
+  if (typeof value !== "object" || value === null || !value.image) {
+    return false;
+  }
+
+  const image = value.image;
+  return (
+    isImageType(image) &&
+    (image.thumbnails === undefined ||
+      (Array.isArray(image.thumbnails) &&
+        image.thumbnails.every(isThumbnailType)))
+  );
+};
+
+const isYextImage = (value: any): boolean => {
+  return isImageType(value) || isComplexImageType(value);
 };
 
 const isImageUrl = (value: string): boolean => {
@@ -202,42 +248,63 @@ export const getFieldValuesList = (
     if (type === "hours" && isHoursType(value)) {
       result.push({ fieldId: path, value }); // Convert the hours object to a string
     } else if (type === "address" && isAddressType(value)) {
-      console.log("address", value);
       result.push({ fieldId: path, value });
     } else if (type === "url" && typeof value === "string" && isUrl(value)) {
-      result.push({ fieldId: path, value: value });
-    } else if (
-      type === "image url" &&
-      typeof value === "string" &&
-      isUrl(value) &&
-      isImageUrl(value)
-    ) {
-      result.push({ fieldId: path, value: value });
+      result.push({ fieldId: path, value });
+    } else if (type === "image" && isYextImage(value)) {
+      result.push({ fieldId: path, value });
     } else if (
       type === "string" &&
       typeof value === "string" &&
       !isUrl(value) &&
       !isEmail(value)
     ) {
-      result.push({ fieldId: path, value: value });
+      result.push({ fieldId: path, value });
     } else if (type === "number" && typeof value === "number") {
-      result.push({ fieldId: path, value: value });
+      result.push({ fieldId: path, value });
     } else if (
       type === "phone number" &&
       typeof value === "string" &&
       isPhoneNumber(value)
     ) {
-      result.push({ fieldId: path, value: value });
+      result.push({ fieldId: path, value });
     } else if (
       type === "email" &&
       typeof value === "string" &&
       isEmail(value)
     ) {
-      result.push({ fieldId: path, value: value });
+      result.push({ fieldId: path, value });
     }
   };
 
   const traverse = (currentObject: any, path: string) => {
+    // When type is 'string', only process top-level string fields
+    if (type === "string") {
+      for (const key in currentObject) {
+        if (currentObject.hasOwnProperty(key)) {
+          const value = currentObject[key];
+          const newPath = path ? `${path}.${key}` : key;
+          if (typeof value === "string") {
+            processValue(value, newPath);
+          }
+        }
+      }
+      return; // Prevent further traversal for 'string' type
+    }
+
+    if (type === "image") {
+      for (const key in currentObject) {
+        if (currentObject.hasOwnProperty(key)) {
+          const value = currentObject[key];
+          const newPath = path ? `${path}.${key}` : key;
+          if (isYextImage(value)) {
+            processValue(value, newPath);
+          }
+        }
+      }
+      return; // Stop further traversal for 'yext image' type
+    }
+
     // Check and process 'hours' type at the current level
     if (type === "hours" && isHoursType(currentObject)) {
       processValue(currentObject, path);

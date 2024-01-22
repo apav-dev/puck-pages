@@ -3,8 +3,6 @@ import type { Data } from "@measured/puck";
 import config from "../config";
 import { useToast } from "../components/useToast";
 import { ToastAction } from "../components/shadcn/Toast";
-
-// import "@measured/puck/dist/index.css";
 import ModifyStreamPlugin from "../plugins/ModifyStream";
 import { Header } from "../components/puck-overrides/Header";
 import { useEditorContext } from "../utils/useEditorContext";
@@ -104,11 +102,7 @@ export const Editor = ({}: EditorProps) => {
       plugins={[ModifyStreamPlugin]}
       overrides={{
         header: ({ actions }) => (
-          <Header
-            actions={actions}
-            entityId={entityId}
-            templateName={linkedTemplateEntity.name}
-          />
+          <Header actions={actions} templateName={linkedTemplateEntity.name} />
         ),
         headerActions: ({ children }) => {
           const { appState } = usePuck();

@@ -2,7 +2,7 @@ export type EntityFieldType =
   | "string"
   | "number"
   | "url"
-  | "image url"
+  | "image"
   | "phone number"
   | "email"
   | "address"

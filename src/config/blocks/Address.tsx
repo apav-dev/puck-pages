@@ -5,9 +5,11 @@ import {
   Address as PagesAddressCmpt,
   AddressType,
 } from "@yext/pages-components";
+import { SelectorField } from "../../components/fields/SelectorField";
+import { useTemplateData } from "../../utils/useTemplateData";
 
 export interface AddressProps {
-  addressField?: { fieldId: string; value: AddressType };
+  addressField?: string;
   line1?: string;
   line2?: string;
   line3?: string;
@@ -23,15 +25,22 @@ export interface AddressProps {
 
 export const Address: ComponentConfig<AddressProps> = {
   fields: {
-    // TODO: Replace with DropdownField
     addressField: {
-      label: "Address",
-      type: "external",
-      getItemSummary: (item, i) => item?.fieldId || `Address #${i}`,
-      fetchList: async () => {
+      label: "Hours",
+      type: "custom",
+      render: ({ field, onChange, value, name }) => {
         const entityId = getEntityIdFromUrl();
-        const fields = await getEntityFieldsList("address");
-        return fields;
+        return (
+          <SelectorField
+            entityId={entityId}
+            field={field}
+            value={value}
+            name={name}
+            onChange={onChange}
+            label="Address Field"
+            entityFieldType="address"
+          />
+        );
       },
     },
     line1: { label: "Line 1", type: "text" },
@@ -56,16 +65,35 @@ export const Address: ComponentConfig<AddressProps> = {
   resolveData: async ({ props }, { changed }) => {
     const data = {
       props: { ...props },
+      readOnly: {},
     };
 
-    if (changed.addressField) {
+    if (props.addressField) {
       const fields = await getEntityFieldsList("address");
       const field = fields.find(
-        (field) => field.fieldId === props.addressField?.fieldId
+        (field) => field.fieldId === props.addressField
       );
-      // if (field) {
-      //   data.props = { ...data.props, addressField: field.value };
-      // }
+      const value = field?.value as AddressType;
+      if (field) {
+        data.props = {
+          ...value,
+          addressField: props.addressField,
+          id: props.id,
+        };
+        data.readOnly = {
+          line1: true,
+          line2: true,
+          line3: true,
+          city: true,
+          region: true,
+          postalCode: true,
+          countryCode: true,
+          sublocality: true,
+          extraDescription: true,
+          localizedRegionName: true,
+          localizedCountryName: true,
+        };
+      }
     }
 
     return data;
@@ -84,11 +112,13 @@ export const Address: ComponentConfig<AddressProps> = {
     localizedRegionName,
     localizedCountryName,
   }) => {
+    const { document } = useTemplateData();
+
     return (
       <PagesAddressCmpt
         address={
-          addressField
-            ? addressField.value
+          addressField && document && document[addressField]
+            ? document[addressField]
             : {
                 line1,
                 line2,

@@ -47,10 +47,7 @@ export const SelectorField = ({
 
   const handleInputChange = (e: Event) => {
     const fieldId = e.target?.textContent;
-    onChange({
-      fieldId,
-      value: entityQuery.data.find((field) => field.fieldId === fieldId).value,
-    });
+    onChange(fieldId);
   };
 
   return (

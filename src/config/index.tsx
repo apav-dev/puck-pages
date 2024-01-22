@@ -1,5 +1,5 @@
 import { Config, Data } from "@measured/puck";
-import { Hero, HeroProps } from "./blocks/Hero";
+// import { Hero, HeroProps } from "./blocks/Hero";
 
 import Root, { RootProps } from "./root";
 import { Gallery, GalleryProps } from "./blocks/Gallery";
@@ -9,16 +9,17 @@ import { Banner, BannerProps } from "./blocks/Banner";
 import { Email, EmailProps } from "./blocks/Email";
 import { PhoneNumber, PhoneNumberProps } from "./blocks/PhoneNumber";
 import { AddressProps, Address } from "./blocks/Address";
+import { HeroProps, Hero } from "./blocks/Hero";
 
 type Props = {
   Hero: HeroProps;
-  Gallery: GalleryProps;
-  Columns: ColumnsProps;
-  Text: TextProps;
-  Banner: BannerProps;
+  // Gallery: GalleryProps;
+  // Columns: ColumnsProps;
+  // Text: TextProps;
+  // Banner: BannerProps;
   Address: AddressProps;
   Email: EmailProps;
-  PhoneNumber: PhoneNumberProps;
+  // PhoneNumber: PhoneNumberProps;
 };
 
 // We avoid the name config as next gets confused
@@ -28,20 +29,20 @@ export const conf: Config<Props, RootProps> = {
   },
   components: {
     Hero,
-    Gallery,
-    Columns,
-    Text,
-    Banner,
+    // Gallery,
+    // Columns,
+    // Text,
+    // Banner,
     Address,
     Email,
-    PhoneNumber,
+    // PhoneNumber,
   },
-  categories: {
-    Basics: { components: ["Banner", "Text"] },
-    Entity: { components: ["Address", "Email", "PhoneNumber"] },
-    Sections: { components: ["Hero", "Gallery"] },
-    Layouts: { components: ["Columns"] },
-  },
+  // categories: {
+  //   Basics: { components: ["Banner", "Text"] },
+  //   Entity: { components: ["Address", "Email", "PhoneNumber"] },
+  //   Sections: { components: ["Hero", "Gallery"] },
+  //   Layouts: { components: ["Columns"] },
+  // },
 };
 
 export const initialData: Data = {

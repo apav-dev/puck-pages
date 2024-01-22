@@ -1,3 +1,5 @@
+import { Data } from "@measured/puck";
+
 export interface Address {
   line1?: string;
   line2?: string;
@@ -88,4 +90,5 @@ export interface Locations {
   emails: string[];
   slug: string;
   c_linkedTemplate: C_linkedTemplate[];
+  templateData?: Data;
 }

@@ -16,10 +16,25 @@ export const transformProps = async (
   const response = await fetch(jsonUrl);
   const templateData: Data = await response.json();
 
-  const injectedTemplate = injectDocumentValues(document, templateData);
+  // const injectedTemplate = injectDocumentValues(document, templateData);
+
+  console.log("templateData", templateData);
+
+  const test = {
+    ...data,
+    document: {
+      ...document,
+      templateData,
+    },
+  };
+
+  console.log("data", test);
 
   return {
     ...data,
-    document: { ...document, templateData: injectedTemplate },
+    document: {
+      ...document,
+      templateData: { content: [], root: { props: { title: "" } }, zones: {} },
+    },
   };
 };

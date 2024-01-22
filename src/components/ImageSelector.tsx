@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./shadcn/Tabs";
 import { getEntityFieldsList } from "../utils/puck-utils";
 
 export interface ImageSelectorProps {
-  onChange: (value: { fieldId?: string; value: string }) => void;
+  onChange: (selectedImage: { imageUrl: string; fieldId?: string }) => void;
   entityId?: string;
 }
 
@@ -39,7 +39,7 @@ export const ImageSelector = ({ onChange, entityId }: ImageSelectorProps) => {
     queryKey: ["entityPhotos", entityId],
     retry: false,
     enabled: !!entityId,
-    queryFn: () => getEntityFieldsList("image url"),
+    queryFn: () => getEntityFieldsList("image"),
   });
 
   const handleSearchClick = (value: string) => {
@@ -78,7 +78,7 @@ export const ImageSelector = ({ onChange, entityId }: ImageSelectorProps) => {
                           backgroundImage: `url(${result.urls.small})`,
                         }}
                         onClick={() => {
-                          onChange({ value: result.urls.regular });
+                          onChange({ imageUrl: result.urls.regular });
                         }}
                       >
                         <Button className="text-transparent" variant="ghost">
@@ -117,7 +117,7 @@ export const ImageSelector = ({ onChange, entityId }: ImageSelectorProps) => {
                           backgroundImage: `url(${asset.value.image.url})`,
                         }}
                         onClick={() => {
-                          onChange({ value: asset.value.image.url });
+                          onChange({ imageUrl: asset.value.image.url });
                         }}
                       >
                         <Button className="text-transparent" variant="ghost">
