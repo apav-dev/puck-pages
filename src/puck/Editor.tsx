@@ -1,18 +1,20 @@
-import { Button, Puck, usePuck } from "@measured/puck";
+import { Button, Puck, resolveAllData, usePuck } from "@measured/puck";
 import type { Data } from "@measured/puck";
 import config from "../config";
 import { useToast } from "../components/useToast";
 import { ToastAction } from "../components/shadcn/Toast";
-import ModifyStreamPlugin from "../plugins/ModifyStream";
 import { Header } from "../components/puck-overrides/Header";
 import { useEditorContext } from "../utils/useEditorContext";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export interface EditorProps {}
 
 export const Editor = ({}: EditorProps) => {
   const { toast } = useToast();
 
-  const { linkedTemplateEntity, entitySlug, entityId } = useEditorContext();
+  const { linkedTemplateEntity, entitySlug, isResolvingData } =
+    useEditorContext();
 
   const handlePublish = async (data: Data) => {
     const resp = await fetch(`/api/entity/${linkedTemplateEntity.id}`, {
@@ -95,32 +97,65 @@ export const Editor = ({}: EditorProps) => {
   };
 
   return (
-    <Puck
-      config={config}
-      data={linkedTemplateEntity.template}
-      onPublish={handlePublish}
-      plugins={[ModifyStreamPlugin]}
-      overrides={{
-        header: ({ actions }) => (
-          <Header actions={actions} templateName={linkedTemplateEntity.name} />
-        ),
-        headerActions: ({ children }) => {
-          const { appState } = usePuck();
-          return (
-            <>
-              {children}
-              <div>
-                <Button
-                  onClick={() => handleCreateSuggestion(appState.data)}
-                  variant="secondary"
-                >
-                  Create Suggestion
-                </Button>
-              </div>
-            </>
-          );
-        },
-      }}
-    />
+    <>
+      {linkedTemplateEntity ? (
+        <Puck
+          config={config}
+          data={linkedTemplateEntity?.template}
+          onPublish={handlePublish}
+          // plugins={[ModifyStreamPlugin]}
+          overrides={{
+            header: ({ actions }) => (
+              <Header
+                actions={actions}
+                templateName={linkedTemplateEntity?.name}
+              />
+            ),
+            headerActions: ({ children }) => {
+              const { appState } = usePuck();
+              return (
+                <>
+                  {children}
+                  <div>
+                    <Button
+                      onClick={() => handleCreateSuggestion(appState.data)}
+                      variant="secondary"
+                    >
+                      Create Suggestion
+                    </Button>
+                  </div>
+                </>
+              );
+            },
+            preview: ({ children }) => <CustomPreview children={children} />,
+          }}
+        />
+      ) : (
+        <div>Loading...</div>
+      )}
+    </>
   );
+};
+
+const CustomPreview = ({ children }: { children: React.ReactNode }) => {
+  const { dispatch } = usePuck();
+
+  const { linkedTemplateEntity, entityId } = useEditorContext();
+
+  const { data: resolvedTemplateData, isPending: resolvingData } = useQuery({
+    queryKey: ["resolveData", entityId],
+    queryFn: () => resolveAllData(linkedTemplateEntity.template, config),
+    enabled: entityId !== "",
+  });
+
+  useEffect(() => {
+    if (resolvedTemplateData) {
+      dispatch({
+        type: "setData",
+        data: resolvedTemplateData || {},
+      });
+    }
+  }, [resolvedTemplateData]);
+
+  return <div>{children}</div>;
 };

@@ -47,6 +47,7 @@ const Puck: Template<TemplateRenderProps> = (props) => {
   const [entitySlug, setEntitySlug] = useState<string>("");
   const [linkedTemplateEntity, setLinkedTemplateEntity] =
     useState<LinkedTemplateEntity>();
+  const [isResolvingData, setIsResolvingData] = useState<boolean>(false);
 
   useEffect(() => {
     setEntityId(getEntityIdFromUrl());
@@ -63,7 +64,7 @@ const Puck: Template<TemplateRenderProps> = (props) => {
     }
   }, [entityId]);
 
-  const { data } = useQuery({
+  const { data: entityDocument, isLoading } = useQuery({
     queryKey: ["entityId", entityId],
     retry: false,
     queryFn: () => fetchEntityDocument(templateId, entityId),
@@ -72,12 +73,12 @@ const Puck: Template<TemplateRenderProps> = (props) => {
 
   useEffect(() => {
     const fetchTemplateData = async () => {
-      if (data) {
-        setEntitySlug(data.response.document.slug);
+      if (entityDocument) {
+        setEntitySlug(entityDocument.response.document.slug);
 
         // TODO: Handle case where fields are missing
         const linkedTemplateEntity =
-          data.response.document.c_linkedTemplate?.[0];
+          entityDocument.response.document.c_linkedTemplate?.[0];
 
         const jsonUrl = linkedTemplateEntity.c_template?.url;
         const response = await fetch(jsonUrl);
@@ -93,34 +94,36 @@ const Puck: Template<TemplateRenderProps> = (props) => {
       }
     };
     fetchTemplateData();
-  }, [data]);
+  }, [entityDocument]);
 
   // TODO: Render a different component if no entityId
-  if (linkedTemplateEntity && entityId && templateId) {
-    return (
-      <>
-        <EditorContextProvider
-          value={{
-            entityId,
-            setEntityId,
-            templateId,
-            setTemplateId,
-            entitySlug,
-            setEntitySlug,
-            linkedTemplateEntity,
-            setLinkedTemplateEntity,
-          }}
-        >
-          <Main data={{}}>
+  // if (linkedTemplateEntity && entityId && templateId) {
+  return (
+    <>
+      <EditorContextProvider
+        value={{
+          entityId,
+          setEntityId,
+          templateId,
+          setTemplateId,
+          entitySlug,
+          setEntitySlug,
+          linkedTemplateEntity,
+          setLinkedTemplateEntity,
+          isResolvingData,
+          setIsResolvingData,
+        }}
+      >
+        <Main data={{}}>
+          <>
             <Editor />
             <Toaster />
-          </Main>
-        </EditorContextProvider>
-      </>
-    );
-  } else {
-    return <div>Loading...</div>;
-  }
+          </>
+          {/* )} */}
+        </Main>
+      </EditorContextProvider>
+    </>
+  );
 };
 
 export default Puck;

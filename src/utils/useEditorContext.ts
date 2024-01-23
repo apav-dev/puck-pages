@@ -10,6 +10,8 @@ type EditorContextType = {
   setEntitySlug: (entitySlug: string) => void;
   linkedTemplateEntity: LinkedTemplateEntity;
   setLinkedTemplateEntity: (linkedTemplateEntity: LinkedTemplateEntity) => void;
+  isResolvingData: boolean;
+  setIsResolvingData: (isResolvingData: boolean) => void;
 };
 
 export const [useEditorContext, EditorContextProvider] =

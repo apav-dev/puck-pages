@@ -178,22 +178,18 @@ export const Hero: ComponentConfig<HeroProps> = {
       }
     }
 
-    if (
-      changed.imageUrlField &&
-      props.imageUrlField &&
-      "fieldId" in props.imageUrlField
-    ) {
+    if (props.imageUrlField && "fieldId" in props.imageUrlField) {
       const imageFields = await getEntityFieldsList("image");
       const imageField = imageFields.find(
         (field) => field.fieldId === props.imageUrlField.fieldId
-      ) as ComplexImageType | ImageType | undefined;
-
+      ) as
+        | { imageUrl: string }
+        | { fieldId: string; value: ComplexImageType | ImageType };
       if (imageField) {
-        props.imageUrlField = {
-          ...props.imageUrlField,
-        };
+        props.imageUrlField = imageField;
       }
     }
+
     return { props, readOnly };
   },
   defaultProps: {
@@ -205,8 +201,10 @@ export const Hero: ComponentConfig<HeroProps> = {
     imageUrlField: { imageUrl: placeholderImgUrl },
   },
   render: ({
+    titleFieldId,
     title,
     subtitle,
+    subtitleFieldId,
     align,
     buttons,
     padding,
@@ -215,16 +213,6 @@ export const Hero: ComponentConfig<HeroProps> = {
     // hours,
   }) => {
     const { document } = useTemplateData();
-
-    console.log("imageUrlField", imageUrlField);
-    // console.log(
-    //   "imageUrl",
-    //   "fieldId" in imageUrlField
-    //     ? document
-    //       ? document[imageUrlField.fieldId] ?
-    //       : imageUrlField.image ? imageUrlField.image : imageUrlField.value
-    //     : imageUrlField.imageUrl
-    // );
 
     return (
       <Section
@@ -261,12 +249,16 @@ export const Hero: ComponentConfig<HeroProps> = {
         <div className="flex items-center relative gap-12 flex-wrap lg:flex-nowrap">
           <div className="flex flex-col gap-4 w-full md:max-w-1/2">
             <EntityHeadingText
-              text={subtitle}
+              text={
+                subtitleFieldId && document
+                  ? document[subtitleFieldId]
+                  : subtitle
+              }
               headingLevel="h3"
               className="text-2xl font-semibold mb-1"
             />
             <EntityHeadingText
-              text={title}
+              text={titleFieldId && document ? document[titleFieldId] : title}
               headingLevel="h1"
               className="text-5xl font-bold mb-4"
             />

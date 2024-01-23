@@ -28,8 +28,6 @@ export const transformProps = async (
     },
   };
 
-  console.log("data", test);
-
   return {
     ...data,
     document: {

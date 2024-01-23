@@ -67,7 +67,6 @@ export const Address: ComponentConfig<AddressProps> = {
       props: { ...props },
       readOnly: {},
     };
-
     if (props.addressField) {
       const fields = await getEntityFieldsList("address");
       const field = fields.find(

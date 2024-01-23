@@ -1,4 +1,3 @@
-import { resolveAllData, usePuck } from "@measured/puck";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,9 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "../shadcn/Dropdown";
 import { Button } from "../shadcn/Button";
-import { useEffect } from "react";
 import { useEditorContext } from "../../utils/useEditorContext";
-import config from "../../config";
 
 type HeaderProps = {
   templateName?: string;
@@ -17,21 +14,11 @@ type HeaderProps = {
 };
 
 const Header = ({ actions, templateName }: HeaderProps) => {
-  const { appState, dispatch } = usePuck();
   const { linkedTemplateEntity, setEntityId, entityId } = useEditorContext();
 
   const handleEntityIdChange = (entityId: string) => {
     setEntityId(entityId);
   };
-
-  useEffect(() => {
-    resolveAllData(linkedTemplateEntity.template, config).then((data) => {
-      dispatch({
-        type: "setData",
-        data,
-      });
-    });
-  }, [entityId]);
 
   return (
     <div
