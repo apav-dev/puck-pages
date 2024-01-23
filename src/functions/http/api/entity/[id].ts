@@ -25,7 +25,7 @@ export default async function entity(
   }
 }
 
-const getEntity = async (entityId?: string): Promise<SitesHttpResponse> => {
+const getEntity = async (entityId?: string): Promise<PagesHttpResponse> => {
   if (!entityId) {
     return { body: "Missing entity id", headers: {}, statusCode: 400 };
   }
@@ -60,7 +60,7 @@ const getEntity = async (entityId?: string): Promise<SitesHttpResponse> => {
 const updateEntity = async (
   entityId?: string,
   entityBody?: Record<string, any>
-): Promise<SitesHttpResponse> => {
+): Promise<PagesHttpResponse> => {
   if (!entityId) {
     return { body: "Missing entity id", headers: {}, statusCode: 400 };
   } else if (!entityBody) {
