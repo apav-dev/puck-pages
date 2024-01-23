@@ -9,6 +9,7 @@ import { Section } from "../components/Section";
 import { EntityHeadingText } from "../components/EntityHeadingText";
 import { Button } from "../components/Button";
 import { ImageField } from "../../components/fields/ImageField";
+import { getImageUrl } from "../../utils/type-utils";
 
 const placeholderImgUrl =
   "https://a.mktgcdn.com/p/XS2QGe2SHfM-UxL6qOCxmjUVUYUZ8_lVwj1nIDrqFR4/1560x878.jpg";
@@ -22,7 +23,9 @@ export type HeroProps = {
   align?: string;
   padding: string;
   imageMode?: "inline" | "background";
-  imageUrlField?: { fieldId?: string; imageUrl: string };
+  imageUrlField?:
+    | { imageUrl: string }
+    | { fieldId: string; value: ComplexImageType | ImageType };
   buttons: {
     label: string;
     href: string;
@@ -175,20 +178,22 @@ export const Hero: ComponentConfig<HeroProps> = {
       }
     }
 
-    if (changed.imageUrlField && props.imageUrlField?.fieldId) {
+    if (
+      changed.imageUrlField &&
+      props.imageUrlField &&
+      "fieldId" in props.imageUrlField
+    ) {
       const imageFields = await getEntityFieldsList("image");
       const imageField = imageFields.find(
-        (field) => field.fieldId === props.imageUrlField?.fieldId
+        (field) => field.fieldId === props.imageUrlField.fieldId
       ) as ComplexImageType | ImageType | undefined;
 
       if (imageField) {
         props.imageUrlField = {
           ...props.imageUrlField,
-          imageUrl: imageField.image ? imageField.image.url : imageField.url,
         };
       }
     }
-
     return { props, readOnly };
   },
   defaultProps: {
@@ -211,6 +216,16 @@ export const Hero: ComponentConfig<HeroProps> = {
   }) => {
     const { document } = useTemplateData();
 
+    console.log("imageUrlField", imageUrlField);
+    // console.log(
+    //   "imageUrl",
+    //   "fieldId" in imageUrlField
+    //     ? document
+    //       ? document[imageUrlField.fieldId] ?
+    //       : imageUrlField.image ? imageUrlField.image : imageUrlField.value
+    //     : imageUrlField.imageUrl
+    // );
+
     return (
       <Section
         padding={padding}
@@ -221,12 +236,21 @@ export const Hero: ComponentConfig<HeroProps> = {
           // Add more conditional classes as needed
         )}
       >
-        {imageMode === "background" && (
+        {imageUrlField && imageMode === "background" && (
           <>
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: `url("${imageUrlField?.imageUrl}")`,
+                backgroundImage: `url('${
+                  "fieldId" in imageUrlField
+                    ? document
+                      ? getImageUrl({
+                          fieldId: imageUrlField.fieldId,
+                          value: document[imageUrlField.fieldId],
+                        })
+                      : getImageUrl(imageUrlField)
+                    : imageUrlField.imageUrl
+                }')`,
               }}
             ></div>
 
@@ -273,7 +297,16 @@ export const Hero: ComponentConfig<HeroProps> = {
             imageUrlField && (
               <div
                 style={{
-                  backgroundImage: `url('${imageUrlField.imageUrl}')`,
+                  backgroundImage: `url('${
+                    "fieldId" in imageUrlField
+                      ? document
+                        ? getImageUrl({
+                            fieldId: imageUrlField.fieldId,
+                            value: document[imageUrlField.fieldId],
+                          })
+                        : getImageUrl(imageUrlField)
+                      : imageUrlField.imageUrl
+                  }')`,
                   backgroundSize: "cover",
                   backgroundRepeat: "no-repeat",
                   backgroundPosition: "center",

@@ -11,10 +11,14 @@ import {
   DialogTrigger,
 } from "../shadcn/Dialog";
 import { ImageSelector } from "../ImageSelector";
+import { ComplexImageType, ImageType } from "@yext/pages-components";
+import { getImageUrl } from "../../utils/type-utils";
 
 export interface ImageFieldProps {
   name: string;
-  value: { fieldId?: string; imageUrl: string };
+  value:
+    | { imageUrl: string }
+    | { fieldId: string; value: ComplexImageType | ImageType };
   onChange: (value: Props) => void;
   field: CustomField;
   entityId?: string;
@@ -59,8 +63,7 @@ export const ImageField = ({
       <div className="relative group">
         {value ? (
           <img
-            // key={index}
-            src={selectedImage.imageUrl}
+            src={getImageUrl(selectedImage)}
             alt={`Image`}
             className="w-full h-auto"
           />
@@ -98,7 +101,7 @@ export const ImageField = ({
                   alt="Placeholder image"
                   className={`object-cover aspect-square mx-auto`}
                   height="400"
-                  src={selectedImage.imageUrl}
+                  src={getImageUrl(selectedImage)}
                   width="400"
                 />
               </div>

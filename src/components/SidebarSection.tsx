@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 // import { ChevronRight } from "react-feather";
 // import { useBreadcrumbs } from "../../lib/use-breadcrumbs";
 // import { useAppContext } from "../Puck/context";
-import { ClipLoader } from "react-spinners";
+// import { ClipLoader } from "react-spinners";
 import { Heading } from "./Heading";
 
 export const SidebarSection = ({
@@ -59,7 +59,7 @@ export const SidebarSection = ({
       </div>
       {isLoading && (
         <div className="absolute top-0 w-full h-full bg-white flex justify-center items-center opacity-80 z-10">
-          <ClipLoader />
+          {/* <ClipLoader /> */}
         </div>
       )}
     </div>

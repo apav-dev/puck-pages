@@ -144,7 +144,7 @@ export const ImageSelector = ({ onChange, entityId }: ImageSelectorProps) => {
               )}
               {entityPhotosQuery.data && (
                 <div className="grid grid-cols-2 gap-2">
-                  {entityPhotosQuery.data.map((image) => (
+                  {entityPhotosQuery.data.map((item) => (
                     <div
                       className={`flex flex-col gap-2 justify-center ${
                         unsplashQuery.isLoading ? "opacity-50" : ""
@@ -152,11 +152,16 @@ export const ImageSelector = ({ onChange, entityId }: ImageSelectorProps) => {
                     >
                       <Button
                         className="mx-auto w-[129px] h-[88px] bg-cover relative group"
+                        // TODO: fix typing
                         style={{
-                          backgroundImage: `url(${image.value})`,
+                          backgroundImage: `url(${
+                            item.value.image
+                              ? item.value.image.url
+                              : item.value.url
+                          })`,
                         }}
                         onClick={() => {
-                          onChange(image);
+                          onChange(item);
                         }}
                       >
                         <Button className="text-transparent" variant="ghost">

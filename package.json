@@ -7,16 +7,15 @@
   "type": "module",
   "scripts": {
     "prebuild": "node prebuild.cjs",
-    "build": "npm run prebuild && pages build",
-    "dev": "node prebuild.cjs && pages dev",
+    "build": "pages build",
+    "dev": "pages dev",
     "prod": "pages prod",
     "fmt": "prettier -w .",
     "lint": "eslint .",
-    "clean": "rm -rf .artifact-output .yext/ dist/ localData sites-rendered-output",
-    "build:local": "pages build"
+    "clean": "rm -rf .artifact-output .yext/ dist/ localData sites-rendered-output"
   },
   "engines": {
-    "node": "^18.0.0 || >=20.0.0"
+    "node": "^18.0.0 || >=20.2.0"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.3",
@@ -38,7 +37,6 @@
     "@vercel/blob": "^0.15.1",
     "@vercel/kv": "^1.0.0",
     "@yext/pages-components": "^1.0.0-rc.0",
-    "@yext/sites-components": "1.0.0-rc.5",
     "@yext/sites-react-components": "^0.1.19-beta.1",
     "@yext/types": "^0.1.13-alpha",
     "class-variance-authority": "^0.7.0",
@@ -67,8 +65,8 @@
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
-    "@vitejs/plugin-react": "^4.0.4",
-    "@yext/pages": "1.0.0-rc.6",
+    "@vitejs/plugin-react": "^4.2.1",
+    "@yext/pages": "1.0.0-rc.8",
     "autoprefixer": "^10.4.8",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-react": "^7.31.7",
@@ -77,6 +75,6 @@
     "prettier": "^2.7.1",
     "tailwindcss": "^3.1.8",
     "typescript": "^4.8.3",
-    "vite": "4.4.9"
+    "vite": "^5.0.10"
   }
 }

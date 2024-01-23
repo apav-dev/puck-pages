@@ -1,10 +1,10 @@
-import { SitesHttpRequest, SitesHttpResponse } from "@yext/pages/*";
+import { PagesHttpRequest, PagesHttpResponse } from "@yext/pages/*";
 
 const CLOUDFLARE_WORKER_URL = "https://temp-storage.ajpavlick.workers.dev";
 
 export default async function entity(
-  request: SitesHttpRequest
-): Promise<SitesHttpResponse> {
+  request: PagesHttpRequest
+): Promise<PagesHttpResponse> {
   const { method, pathParams, body } = request;
   const entityId = pathParams.id;
   if (!entityId) {

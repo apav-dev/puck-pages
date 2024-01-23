@@ -34,7 +34,7 @@ export const transformProps = async (
     ...data,
     document: {
       ...document,
-      templateData: { content: [], root: { props: { title: "" } }, zones: {} },
+      templateData,
     },
   };
 };

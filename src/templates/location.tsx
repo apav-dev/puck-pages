@@ -35,7 +35,7 @@ export const config: TemplateConfig = {
       "c_linkedTemplate.c_template",
       "c_linkedTemplate.c_linkedEntities.id",
     ],
-    filter: { entityTypes: ["location"] },
+    filter: { entityIds: ["aarons-store", "lucs-store"] },
     localization: { locales: ["en"] },
   },
 };
@@ -46,8 +46,7 @@ export const getPath: GetPath<TemplateProps> = ({ document }) => {
 
 // Initialize the configuration asynchronously
 const Location: Template<TemplateRenderProps<LocationsType>> = (data) => {
-  // return <LocationLayout {...data} />;
-  return <>{JSON.stringify(data.document.templateData)}</>;
+  return <LocationLayout {...data} />;
 };
 
 export default Location;
