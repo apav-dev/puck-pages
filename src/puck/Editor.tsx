@@ -1,29 +1,23 @@
-import { Button, Puck, usePuck } from "@measured/puck";
+import { Button, Puck, resolveAllData, usePuck } from "@measured/puck";
 import type { Data } from "@measured/puck";
 import config from "../config";
 import { useToast } from "../components/useToast";
 import { ToastAction } from "../components/shadcn/Toast";
+import { Header } from "../components/puck-overrides/Header";
+import { useEditorContext } from "../utils/useEditorContext";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-import "@measured/puck/dist/index.css";
-import ModifyStreamPlugin from "../plugins/ModifyStream";
+export interface EditorProps {}
 
-export interface EditorProps {
-  initialData: Data;
-  entityId: string;
-  linkedTemplateEntityId: string;
-  entitySlug?: string;
-}
-
-export const Editor = ({
-  initialData,
-  entityId,
-  entitySlug,
-  linkedTemplateEntityId,
-}: EditorProps) => {
+export const Editor = ({}: EditorProps) => {
   const { toast } = useToast();
 
+  const { linkedTemplateEntity, entitySlug, isResolvingData } =
+    useEditorContext();
+
   const handlePublish = async (data: Data) => {
-    const resp = await fetch(`/api/entity/${linkedTemplateEntityId}`, {
+    const resp = await fetch(`/api/entity/${linkedTemplateEntity.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -60,7 +54,7 @@ export const Editor = ({
   const handleCreateSuggestion = async (data: Data) => {
     try {
       const resp = await fetch(
-        `/api/entity/${linkedTemplateEntityId}/suggestion`,
+        `/api/entity/${linkedTemplateEntity.id}/suggestion`,
         {
           method: "POST",
           headers: {
@@ -103,30 +97,65 @@ export const Editor = ({
   };
 
   return (
-    <Puck
-      config={config}
-      data={initialData}
-      onPublish={handlePublish}
-      plugins={[ModifyStreamPlugin]}
-      overrides={{
-        headerActions: ({ children }) => {
-          const { appState } = usePuck();
-          console.log(appState.data);
-          return (
-            <>
-              {children}
-              <div>
-                <Button
-                  onClick={() => handleCreateSuggestion(appState.data)}
-                  variant="secondary"
-                >
-                  Create Suggestion
-                </Button>
-              </div>
-            </>
-          );
-        },
-      }}
-    />
+    <>
+      {linkedTemplateEntity ? (
+        <Puck
+          config={config}
+          data={linkedTemplateEntity?.template}
+          onPublish={handlePublish}
+          // plugins={[ModifyStreamPlugin]}
+          overrides={{
+            header: ({ actions }) => (
+              <Header
+                actions={actions}
+                templateName={linkedTemplateEntity?.name}
+              />
+            ),
+            headerActions: ({ children }) => {
+              const { appState } = usePuck();
+              return (
+                <>
+                  {children}
+                  <div>
+                    <Button
+                      onClick={() => handleCreateSuggestion(appState.data)}
+                      variant="secondary"
+                    >
+                      Create Suggestion
+                    </Button>
+                  </div>
+                </>
+              );
+            },
+            preview: ({ children }) => <CustomPreview children={children} />,
+          }}
+        />
+      ) : (
+        <div>Loading...</div>
+      )}
+    </>
   );
+};
+
+const CustomPreview = ({ children }: { children: React.ReactNode }) => {
+  const { dispatch } = usePuck();
+
+  const { linkedTemplateEntity, entityId } = useEditorContext();
+
+  const { data: resolvedTemplateData, isPending: resolvingData } = useQuery({
+    queryKey: ["resolveData", entityId],
+    queryFn: () => resolveAllData(linkedTemplateEntity.template, config),
+    enabled: entityId !== "",
+  });
+
+  useEffect(() => {
+    if (resolvedTemplateData) {
+      dispatch({
+        type: "setData",
+        data: resolvedTemplateData || {},
+      });
+    }
+  }, [resolvedTemplateData]);
+
+  return <div>{children}</div>;
 };

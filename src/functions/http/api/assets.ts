@@ -1,8 +1,8 @@
-import { SitesHttpRequest, SitesHttpResponse } from "@yext/pages/*";
+import { PagesHttpRequest, PagesHttpResponse } from "@yext/pages/*";
 
 export default async function entity(
-  request: SitesHttpRequest
-): Promise<SitesHttpResponse> {
+  request: PagesHttpRequest
+): Promise<PagesHttpResponse> {
   const { method } = request;
 
   switch (method) {

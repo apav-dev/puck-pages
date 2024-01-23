@@ -1,3 +1,5 @@
+import { Data } from "@measured/puck";
+
 export interface Address {
   line1?: string;
   line2?: string;
@@ -67,7 +69,11 @@ export interface ComplexImage {
 
 export interface C_linkedTemplate {
   id: string;
+  name: string;
   c_template?: any;
+  c_linkedEntities: {
+    id: string;
+  }[];
 }
 
 export interface Locations {
@@ -84,4 +90,5 @@ export interface Locations {
   emails: string[];
   slug: string;
   c_linkedTemplate: C_linkedTemplate[];
+  templateData?: Data;
 }

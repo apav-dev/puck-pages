@@ -9,13 +9,14 @@ import {
   TemplateRenderProps,
 } from "@yext/pages";
 import { Editor } from "../puck/Editor";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchEntityDocument } from "../utils/api";
 import { getEntityIdFromUrl } from "../utils/getEntityIdFromUrl";
 import { Toaster } from "../components/shadcn/Toaster";
-import { PageContextProvider } from "../utils/usePageContext";
+import { EditorContextProvider } from "../utils/useEditorContext";
 import { getTemplateIdFromUrl } from "../utils/getTemplateIdFromUrl";
+import { Main } from "../layouts/main";
 
 export const getPath: GetPath<TemplateProps> = () => {
   return "puck";
@@ -31,22 +32,39 @@ export const getHeadConfig: GetHeadConfig<
   };
 };
 
-// TODO: Fetch config JSON via template ID rather than entity id in path, hard code entity id for now
-// TODO: eventually add the ability to toggle entity id in the editor. Used list of linked entities
-const Puck: Template<TemplateRenderProps> = () => {
+export interface LinkedTemplateEntity {
+  id: string;
+  name: string;
+  template: any;
+  linkedEntityIds: string[];
+}
+
+const Puck: Template<TemplateRenderProps> = (props) => {
+  const hasMounted = useRef(false);
+
   const [templateId, setTemplateId] = useState<string>("");
   const [entityId, setEntityId] = useState<string>("");
-  const [templateData, setTemplateData] = useState<any>();
-  const [entitySlug, setEntitySlug] = useState<string | undefined>();
-  const [linkedTemplateEntityId, setLinkedTemplateEntityId] =
-    useState<string>("");
+  const [entitySlug, setEntitySlug] = useState<string>("");
+  const [linkedTemplateEntity, setLinkedTemplateEntity] =
+    useState<LinkedTemplateEntity>();
+  const [isResolvingData, setIsResolvingData] = useState<boolean>(false);
 
   useEffect(() => {
     setEntityId(getEntityIdFromUrl());
     setTemplateId(getTemplateIdFromUrl());
   }, []);
 
-  const { data, isSuccess } = useQuery({
+  useEffect(() => {
+    if (hasMounted.current) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("entityId", entityId);
+      window.history.replaceState({}, "", url.toString());
+    } else {
+      hasMounted.current = true;
+    }
+  }, [entityId]);
+
+  const { data: entityDocument, isLoading } = useQuery({
     queryKey: ["entityId", entityId],
     retry: false,
     queryFn: () => fetchEntityDocument(templateId, entityId),
@@ -55,46 +73,57 @@ const Puck: Template<TemplateRenderProps> = () => {
 
   useEffect(() => {
     const fetchTemplateData = async () => {
-      if (data) {
+      if (entityDocument) {
+        setEntitySlug(entityDocument.response.document.slug);
+
         // TODO: Handle case where fields are missing
         const linkedTemplateEntity =
-          data.response.document.c_linkedTemplate?.[0];
-        const jsonUrl = linkedTemplateEntity.c_template?.url;
-        const linkedId = linkedTemplateEntity.id;
-        setLinkedTemplateEntityId(linkedId);
-        const response = await fetch(jsonUrl);
-        const json = await response.json();
+          entityDocument.response.document.c_linkedTemplate?.[0];
 
-        setTemplateData(json);
-        setEntitySlug(data.response.document.slug);
+        const jsonUrl = linkedTemplateEntity.c_template?.url;
+        const response = await fetch(jsonUrl);
+        const templateJson = await response.json();
+
+        setLinkedTemplateEntity({
+          ...linkedTemplateEntity,
+          template: templateJson,
+          linkedEntityIds: linkedTemplateEntity.c_linkedEntities.map(
+            (linkedEntity) => linkedEntity.id
+          ),
+        });
       }
     };
     fetchTemplateData();
-  }, [data]);
+  }, [entityDocument]);
 
   // TODO: Render a different component if no entityId
-  if (templateData && entityId && templateId) {
-    return (
-      <>
-        <PageContextProvider
-          value={{
-            entityId,
-            setEntityId,
-          }}
-        >
-          <Editor
-            initialData={templateData}
-            entityId={entityId}
-            entitySlug={entitySlug}
-            linkedTemplateEntityId={linkedTemplateEntityId}
-          />
-          <Toaster />
-        </PageContextProvider>
-      </>
-    );
-  } else {
-    return <div>Loading...</div>;
-  }
+  // if (linkedTemplateEntity && entityId && templateId) {
+  return (
+    <>
+      <EditorContextProvider
+        value={{
+          entityId,
+          setEntityId,
+          templateId,
+          setTemplateId,
+          entitySlug,
+          setEntitySlug,
+          linkedTemplateEntity,
+          setLinkedTemplateEntity,
+          isResolvingData,
+          setIsResolvingData,
+        }}
+      >
+        <Main data={{}}>
+          <>
+            <Editor />
+            <Toaster />
+          </>
+          {/* )} */}
+        </Main>
+      </EditorContextProvider>
+    </>
+  );
 };
 
 export default Puck;

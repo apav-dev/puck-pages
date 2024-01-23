@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./shadcn/Tabs";
 import { getEntityFieldsList } from "../utils/puck-utils";
 
 export interface ImageSelectorProps {
-  onChange: (value: { fieldId?: string; value: string }) => void;
+  onChange: (selectedImage: { imageUrl: string; fieldId?: string }) => void;
   entityId?: string;
 }
 
@@ -39,7 +39,7 @@ export const ImageSelector = ({ onChange, entityId }: ImageSelectorProps) => {
     queryKey: ["entityPhotos", entityId],
     retry: false,
     enabled: !!entityId,
-    queryFn: () => getEntityFieldsList("image url"),
+    queryFn: () => getEntityFieldsList("image"),
   });
 
   const handleSearchClick = (value: string) => {
@@ -78,7 +78,7 @@ export const ImageSelector = ({ onChange, entityId }: ImageSelectorProps) => {
                           backgroundImage: `url(${result.urls.small})`,
                         }}
                         onClick={() => {
-                          onChange({ value: result.urls.regular });
+                          onChange({ imageUrl: result.urls.regular });
                         }}
                       >
                         <Button className="text-transparent" variant="ghost">
@@ -117,7 +117,7 @@ export const ImageSelector = ({ onChange, entityId }: ImageSelectorProps) => {
                           backgroundImage: `url(${asset.value.image.url})`,
                         }}
                         onClick={() => {
-                          onChange({ value: asset.value.image.url });
+                          onChange({ imageUrl: asset.value.image.url });
                         }}
                       >
                         <Button className="text-transparent" variant="ghost">
@@ -144,7 +144,7 @@ export const ImageSelector = ({ onChange, entityId }: ImageSelectorProps) => {
               )}
               {entityPhotosQuery.data && (
                 <div className="grid grid-cols-2 gap-2">
-                  {entityPhotosQuery.data.map((image) => (
+                  {entityPhotosQuery.data.map((item) => (
                     <div
                       className={`flex flex-col gap-2 justify-center ${
                         unsplashQuery.isLoading ? "opacity-50" : ""
@@ -152,11 +152,16 @@ export const ImageSelector = ({ onChange, entityId }: ImageSelectorProps) => {
                     >
                       <Button
                         className="mx-auto w-[129px] h-[88px] bg-cover relative group"
+                        // TODO: fix typing
                         style={{
-                          backgroundImage: `url(${image.value})`,
+                          backgroundImage: `url(${
+                            item.value.image
+                              ? item.value.image.url
+                              : item.value.url
+                          })`,
                         }}
                         onClick={() => {
-                          onChange(image);
+                          onChange(item);
                         }}
                       >
                         <Button className="text-transparent" variant="ghost">

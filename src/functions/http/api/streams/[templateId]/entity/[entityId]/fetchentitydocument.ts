@@ -1,8 +1,8 @@
-import { SitesHttpRequest, SitesHttpResponse } from "@yext/pages/*";
+import { PagesHttpRequest, PagesHttpResponse } from "@yext/pages/*";
 
 export default async function entityDocument(
-  request: SitesHttpRequest
-): Promise<SitesHttpResponse> {
+  request: PagesHttpRequest
+): Promise<PagesHttpResponse> {
   const { method, pathParams } = request;
 
   // required params
@@ -34,7 +34,6 @@ export default async function entityDocument(
         if (deploymentId) {
           requestPath += `&deploymentId=${deploymentId}`;
         }
-        console.log("requestPath: ", requestPath);
         const response = await fetch(requestPath);
         const body = await response.json();
         return {

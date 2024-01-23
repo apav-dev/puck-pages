@@ -1,9 +1,9 @@
-import { SitesHttpRequest, SitesHttpResponse } from "@yext/pages/*";
+import { PagesHttpRequest, PagesHttpResponse } from "@yext/pages/*";
 import { createCloudflareObject, deleteCloudflareObject } from "../[id]";
 
 export default async function streams(
-  request: SitesHttpRequest
-): Promise<SitesHttpResponse> {
+  request: PagesHttpRequest
+): Promise<PagesHttpResponse> {
   const { method, pathParams, body } = request;
   const entityId = pathParams.entityId;
   if (!entityId) {
@@ -34,7 +34,7 @@ export default async function streams(
 const createEntitySuggestion = async (
   entityId: string,
   body: any
-): Promise<SitesHttpResponse> => {
+): Promise<PagesHttpResponse> => {
   if (body.c_template) {
     const cloudflareFileId = `template-suggestion-${entityId}`;
     const publicFileUrl = await createCloudflareObject(

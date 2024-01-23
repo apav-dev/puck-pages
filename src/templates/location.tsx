@@ -35,7 +35,7 @@ export const config: TemplateConfig = {
       "c_linkedTemplate.c_template",
       "c_linkedTemplate.c_linkedEntities.id",
     ],
-    filter: { entityTypes: ["location"] },
+    filter: { entityIds: ["aarons-store", "lucs-store"] },
     localization: { locales: ["en"] },
   },
 };

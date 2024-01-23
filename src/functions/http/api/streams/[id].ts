@@ -1,4 +1,4 @@
-import { SitesHttpRequest, SitesHttpResponse } from "@yext/pages/*";
+import { PagesHttpRequest, PagesHttpResponse } from "@yext/pages/*";
 import * as z from "zod";
 
 const contentEndpointPatchReq = {
@@ -9,8 +9,8 @@ const contentEndpointPatchReq = {
 };
 
 export default async function streams(
-  request: SitesHttpRequest
-): Promise<SitesHttpResponse> {
+  request: PagesHttpRequest
+): Promise<PagesHttpResponse> {
   const { method, pathParams, body } = request;
   const streamId = pathParams.id;
   if (!streamId) {
