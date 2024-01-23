@@ -58,7 +58,7 @@ export default async function endpoint(
   }
 }
 
-const getEndpoint = async (endpointId?: string): Promise<SitesHttpResponse> => {
+const getEndpoint = async (endpointId?: string): Promise<PagesHttpResponse> => {
   if (!endpointId) {
     return { body: "Missing entity id", headers: {}, statusCode: 400 };
   }
@@ -88,7 +88,7 @@ const getEndpoint = async (endpointId?: string): Promise<SitesHttpResponse> => {
 const updateEndpoint = async (
   endpointId: string,
   endpointBody: Record<string, any>
-): Promise<SitesHttpResponse> => {
+): Promise<PagesHttpResponse> => {
   if (!endpointId) {
     return { body: "Missing endpoint id", headers: {}, statusCode: 400 };
   } else if (!endpointBody) {
