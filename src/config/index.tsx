@@ -11,14 +11,14 @@ import { PhoneNumber, PhoneNumberProps } from "./blocks/PhoneNumber";
 import { AddressProps, Address } from "./blocks/Address";
 import { HeroProps, Hero } from "./blocks/Hero";
 
-type Props = {
+export type Props = {
   Hero: HeroProps;
   // Gallery: GalleryProps;
   // Columns: ColumnsProps;
   // Text: TextProps;
   // Banner: BannerProps;
-  Address: AddressProps;
-  Email: EmailProps;
+  // Address: AddressProps;
+  // Email: EmailProps;
   // PhoneNumber: PhoneNumberProps;
 };
 
@@ -33,8 +33,8 @@ export const conf: Config<Props, RootProps> = {
     // Columns,
     // Text,
     // Banner,
-    Address,
-    Email,
+    // Address,
+    // Email,
     // PhoneNumber,
   },
   // categories: {

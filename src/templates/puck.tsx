@@ -16,7 +16,6 @@ import { getEntityIdFromUrl } from "../utils/getEntityIdFromUrl";
 import { Toaster } from "../components/shadcn/Toaster";
 import { EditorContextProvider } from "../utils/useEditorContext";
 import { getTemplateIdFromUrl } from "../utils/getTemplateIdFromUrl";
-import { Main } from "../layouts/main";
 
 export const getPath: GetPath<TemplateProps> = () => {
   return "puck";
@@ -114,13 +113,8 @@ const Puck: Template<TemplateRenderProps> = (props) => {
           setIsResolvingData,
         }}
       >
-        <Main data={{}}>
-          <>
-            <Editor />
-            <Toaster />
-          </>
-          {/* )} */}
-        </Main>
+        <Editor />
+        <Toaster />
       </EditorContextProvider>
     </>
   );

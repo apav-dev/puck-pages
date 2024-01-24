@@ -10,6 +10,8 @@ import { EntityHeadingText } from "../components/EntityHeadingText";
 import { Button } from "../components/Button";
 import { ImageField } from "../../components/fields/ImageField";
 import { getImageUrl } from "../../utils/type-utils";
+import { getTemplateIdFromUrl } from "../../utils/getTemplateIdFromUrl";
+import { fetchEntityDocument } from "../../utils/api";
 
 const placeholderImgUrl =
   "https://a.mktgcdn.com/p/XS2QGe2SHfM-UxL6qOCxmjUVUYUZ8_lVwj1nIDrqFR4/1560x878.jpg";
@@ -31,6 +33,7 @@ export type HeroProps = {
     href: string;
     variant?: "primary" | "secondary";
   }[];
+  document?: Record<string, unknown>;
 };
 
 // TODO: fix gradient (maybe)
@@ -145,48 +148,50 @@ export const Hero: ComponentConfig<HeroProps> = {
       ],
     },
     padding: { type: "text" },
+    // "hidden" document prop to prevent it from showing up in the sidebar
+    document: {
+      type: "custom",
+      render: () => {
+        return <></>;
+      },
+    },
   },
   resolveData: async ({ props, readOnly }, { changed }) => {
-    // const data = {
-    //   props: { ...props },
-    //   readOnly: {},
-    // };
-
-    if (props.titleFieldId || props.subtitleFieldId) {
-      const stringFields = await getEntityFieldsList("string");
-
-      const titleField = stringFields.find(
-        (field) => field.fieldId === props.titleFieldId
-      );
-
-      const subtitleField = stringFields.find(
-        (field) => field.fieldId === props.subtitleFieldId
-      );
-
-      if (titleField) {
-        props.title = titleField.value as string;
-        readOnly = { ...readOnly, title: true };
-      } else {
-        readOnly = { ...readOnly, title: false };
-      }
-
-      if (subtitleField) {
-        props.subtitle = subtitleField.value as string;
-        readOnly = { ...readOnly, subtitle: true };
-      } else {
-        readOnly = { ...readOnly, subtitle: false };
-      }
+    let document: Record<string, unknown>;
+    if (props.document) {
+      document = props.document;
+    } else {
+      // TODO: see if this can be grabbed from the context
+      const entityId = getEntityIdFromUrl();
+      const templateId = getTemplateIdFromUrl();
+      const apiResp = await fetchEntityDocument(templateId, entityId);
+      document = apiResp.response.document;
     }
 
-    if (props.imageUrlField && "fieldId" in props.imageUrlField) {
-      const imageFields = await getEntityFieldsList("image");
-      const imageField = imageFields.find(
-        (field) => field.fieldId === props.imageUrlField.fieldId
-      ) as
-        | { imageUrl: string }
-        | { fieldId: string; value: ComplexImageType | ImageType };
-      if (imageField) {
-        props.imageUrlField = imageField;
+    if (document) {
+      if (props.titleFieldId) {
+        const titleField = document[props.titleFieldId];
+        if (titleField) {
+          props.title = titleField as string;
+          readOnly = { ...readOnly, title: true };
+        }
+      }
+
+      if (props.subtitleFieldId) {
+        const subtitleField = document[props.subtitleFieldId];
+        if (subtitleField) {
+          props.subtitle = subtitleField as string;
+          readOnly = { ...readOnly, subtitle: true };
+        }
+      }
+
+      if (props.imageUrlField && "fieldId" in props.imageUrlField) {
+        const imageField = document[props.imageUrlField.fieldId] as
+          | { imageUrl: string }
+          | { fieldId: string; value: ComplexImageType | ImageType };
+        if (imageField) {
+          props.imageUrlField = imageField;
+        }
       }
     }
 
@@ -201,10 +206,8 @@ export const Hero: ComponentConfig<HeroProps> = {
     imageUrlField: { imageUrl: placeholderImgUrl },
   },
   render: ({
-    titleFieldId,
     title,
     subtitle,
-    subtitleFieldId,
     align,
     buttons,
     padding,
@@ -212,8 +215,6 @@ export const Hero: ComponentConfig<HeroProps> = {
     imageMode,
     // hours,
   }) => {
-    const { document } = useTemplateData();
-
     return (
       <Section
         padding={padding}
@@ -224,7 +225,7 @@ export const Hero: ComponentConfig<HeroProps> = {
           // Add more conditional classes as needed
         )}
       >
-        {imageUrlField && imageMode === "background" && (
+        {/* {imageUrlField && imageMode === "background" && (
           <>
             <div
               className="absolute inset-0"
@@ -244,21 +245,17 @@ export const Hero: ComponentConfig<HeroProps> = {
 
             <div className="absolute top-0 right-0 bottom-0 left-0 hero-gradient"></div>
           </>
-        )}
+        )} */}
 
         <div className="flex items-center relative gap-12 flex-wrap lg:flex-nowrap">
           <div className="flex flex-col gap-4 w-full md:max-w-1/2">
             <EntityHeadingText
-              text={
-                subtitleFieldId && document
-                  ? document[subtitleFieldId]
-                  : subtitle
-              }
+              text={subtitle}
               headingLevel="h3"
               className="text-2xl font-semibold mb-1"
             />
             <EntityHeadingText
-              text={titleFieldId && document ? document[titleFieldId] : title}
+              text={title}
               headingLevel="h1"
               className="text-5xl font-bold mb-4"
             />
@@ -284,20 +281,18 @@ export const Hero: ComponentConfig<HeroProps> = {
             </div>
           </div>
 
-          {align !== "center" &&
+          {/* {align !== "center" &&
             imageMode !== "background" &&
             imageUrlField && (
               <div
                 style={{
                   backgroundImage: `url('${
                     "fieldId" in imageUrlField
-                      ? document
                         ? getImageUrl({
                             fieldId: imageUrlField.fieldId,
                             value: document[imageUrlField.fieldId],
                           })
                         : getImageUrl(imageUrlField)
-                      : imageUrlField.imageUrl
                   }')`,
                   backgroundSize: "cover",
                   backgroundRepeat: "no-repeat",
@@ -308,7 +303,7 @@ export const Hero: ComponentConfig<HeroProps> = {
                   width: "100%",
                 }}
               />
-            )}
+            )} */}
         </div>
       </Section>
     );

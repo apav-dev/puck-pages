@@ -1,5 +1,8 @@
 import { PagesHttpRequest, PagesHttpResponse } from "@yext/pages/*";
-import { createCloudflareObject, deleteCloudflareObject } from "../[id]";
+import {
+  createCloudflareObject,
+  deleteCloudflareObject,
+} from "../../../../../utils/cloudflare";
 
 export default async function streams(
   request: PagesHttpRequest
