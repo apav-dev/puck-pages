@@ -10,7 +10,7 @@ buildConfiguration:
 livePreviewConfiguration:
   serveCommand: "npm run dev -- --port 8080"
 
-dynamicRoutes:
-  - from: /edit/:templateId
-    to: /puck
-    status: 200
+# dynamicRoutes:
+#   - from: /edit/:templateId
+#     to: /puck
+#     status: 200

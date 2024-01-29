@@ -3,8 +3,6 @@ import { ComplexImageType, ImageType, Link } from "@yext/pages-components";
 import { cn } from "../../utils/cn";
 import { getEntityIdFromUrl } from "../../utils/getEntityIdFromUrl";
 import { SelectorField } from "../../components/fields/SelectorField";
-import { getEntityFieldsList } from "../../utils/puck-utils";
-import { useTemplateData } from "../../utils/useTemplateData";
 import { Section } from "../components/Section";
 import { EntityHeadingText } from "../components/EntityHeadingText";
 import { Button } from "../components/Button";
@@ -190,7 +188,10 @@ export const Hero: ComponentConfig<HeroProps> = {
           | { imageUrl: string }
           | { fieldId: string; value: ComplexImageType | ImageType };
         if (imageField) {
-          props.imageUrlField = imageField;
+          props.imageUrlField = {
+            value: imageField as unknown as ComplexImageType | ImageType,
+            fieldId: props.imageUrlField.fieldId,
+          };
         }
       }
     }
@@ -215,6 +216,7 @@ export const Hero: ComponentConfig<HeroProps> = {
     imageMode,
     // hours,
   }) => {
+    console.log(imageUrlField);
     return (
       <Section
         padding={padding}
@@ -225,27 +227,18 @@ export const Hero: ComponentConfig<HeroProps> = {
           // Add more conditional classes as needed
         )}
       >
-        {/* {imageUrlField && imageMode === "background" && (
+        {imageUrlField && imageMode === "background" && (
           <>
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: `url('${
-                  "fieldId" in imageUrlField
-                    ? document
-                      ? getImageUrl({
-                          fieldId: imageUrlField.fieldId,
-                          value: document[imageUrlField.fieldId],
-                        })
-                      : getImageUrl(imageUrlField)
-                    : imageUrlField.imageUrl
-                }')`,
+                backgroundImage: `url('${getImageUrl(imageUrlField)}')`,
               }}
             ></div>
 
             <div className="absolute top-0 right-0 bottom-0 left-0 hero-gradient"></div>
           </>
-        )} */}
+        )}
 
         <div className="flex items-center relative gap-12 flex-wrap lg:flex-nowrap">
           <div className="flex flex-col gap-4 w-full md:max-w-1/2">
@@ -281,19 +274,13 @@ export const Hero: ComponentConfig<HeroProps> = {
             </div>
           </div>
 
-          {/* {align !== "center" &&
+          {align !== "center" &&
             imageMode !== "background" &&
             imageUrlField && (
               <div
                 style={{
-                  backgroundImage: `url('${
-                    "fieldId" in imageUrlField
-                        ? getImageUrl({
-                            fieldId: imageUrlField.fieldId,
-                            value: document[imageUrlField.fieldId],
-                          })
-                        : getImageUrl(imageUrlField)
-                  }')`,
+                  backgroundImage: `url('${getImageUrl(imageUrlField)}')`,
+
                   backgroundSize: "cover",
                   backgroundRepeat: "no-repeat",
                   backgroundPosition: "center",
@@ -303,7 +290,7 @@ export const Hero: ComponentConfig<HeroProps> = {
                   width: "100%",
                 }}
               />
-            )} */}
+            )}
         </div>
       </Section>
     );

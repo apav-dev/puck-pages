@@ -18,7 +18,7 @@ import { EditorContextProvider } from "../utils/useEditorContext";
 import { getTemplateIdFromUrl } from "../utils/getTemplateIdFromUrl";
 
 export const getPath: GetPath<TemplateProps> = () => {
-  return "puck";
+  return "edit";
 };
 
 export const getHeadConfig: GetHeadConfig<
@@ -38,7 +38,7 @@ export interface LinkedTemplateEntity {
   linkedEntityIds: string[];
 }
 
-const Puck: Template<TemplateRenderProps> = (props) => {
+const Edit: Template<TemplateRenderProps> = (props) => {
   const hasMounted = useRef(false);
 
   const [templateId, setTemplateId] = useState<string>("");
@@ -120,4 +120,4 @@ const Puck: Template<TemplateRenderProps> = (props) => {
   );
 };
 
-export default Puck;
+export default Edit;

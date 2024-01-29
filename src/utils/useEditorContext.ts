@@ -1,4 +1,4 @@
-import { LinkedTemplateEntity } from "../templates/puck";
+import { LinkedTemplateEntity } from "../templates/edit";
 import { createCtx } from "./createCtx";
 
 type EditorContextType = {

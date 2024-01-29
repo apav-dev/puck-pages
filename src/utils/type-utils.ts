@@ -5,16 +5,16 @@ export const getImageUrl = (
     | { imageUrl: string }
     | { fieldId: string; value: ComplexImageType | ImageType }
 ) => {
+  debugger;
   if ("imageUrl" in imageObj) {
     return imageObj.imageUrl;
   } else if (imageObj.value) {
     if ("image" in imageObj.value) {
-      // Handling ComplexImageType
       return imageObj.value.image.url;
     } else if ("url" in imageObj.value) {
-      // Handling ImageType
       return imageObj.value.url;
     }
   }
+  console.log("no image found");
   return "";
 };
