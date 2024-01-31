@@ -101,7 +101,14 @@ export const Editor = ({}: EditorProps) => {
       {linkedTemplateEntity ? (
         <Puck
           config={config}
-          data={linkedTemplateEntity?.template}
+          data={
+            linkedTemplateEntity?.template ?? {
+              content: [],
+              root: { props: { title: "Title" } },
+              zones: {},
+            }
+          }
+          // data={{ content: [], root: { props: { title: "Title" } }, zones: {} }}
           onPublish={handlePublish}
           // plugins={[ModifyStreamPlugin]}
           overrides={{
@@ -127,7 +134,7 @@ export const Editor = ({}: EditorProps) => {
                 </>
               );
             },
-            preview: ({ children }) => <CustomPreview children={children} />,
+            // preview: ({ children }) => <CustomPreview children={children} />,
           }}
         />
       ) : (
@@ -142,9 +149,24 @@ const CustomPreview = ({ children }: { children: React.ReactNode }) => {
 
   const { linkedTemplateEntity, entityId } = useEditorContext();
 
+  useEffect(() => {
+    console.log("linkedTemplateEntity", linkedTemplateEntity);
+  }, [linkedTemplateEntity]);
+
   const { data: resolvedTemplateData, isPending: resolvingData } = useQuery({
-    queryKey: ["resolveData", entityId],
-    queryFn: () => resolveAllData(linkedTemplateEntity.template, config),
+    queryKey: ["resolveData", linkedTemplateEntity.template],
+    queryFn: () =>
+      resolveAllData(
+        linkedTemplateEntity?.template || {
+          content: [],
+          root: { props: { title: "Title" } },
+          zones: {},
+        },
+        config,
+        (item) => {
+          console.log(console.log(item));
+        }
+      ),
     enabled: entityId !== "",
   });
 
@@ -152,7 +174,11 @@ const CustomPreview = ({ children }: { children: React.ReactNode }) => {
     if (resolvedTemplateData) {
       dispatch({
         type: "setData",
-        data: resolvedTemplateData || {},
+        data: resolvedTemplateData || {
+          content: [],
+          root: { props: { title: "Title" } },
+          zones: {},
+        },
       });
     }
   }, [resolvedTemplateData]);

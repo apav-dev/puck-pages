@@ -216,7 +216,6 @@ export const Hero: ComponentConfig<HeroProps> = {
     imageMode,
     // hours,
   }) => {
-    console.log(imageUrlField);
     return (
       <Section
         padding={padding}

@@ -136,7 +136,6 @@ export const FieldSelector = () => {
         description: `Stream updated successfully.`,
       });
     } catch (error) {
-      debugger;
       toast({
         title: "Error",
         description: "Something went wrong. Failed to update stream.",
