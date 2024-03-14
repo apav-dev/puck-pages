@@ -31,55 +31,56 @@ export const config: TemplateConfig = {
       "c_coverPhoto",
       "c_linkedTemplate.id",
       "c_linkedTemplate.name",
-      "c_linkedTemplate.c_template",
+      "c_linkedTemplate.c_templateJson",
       "c_linkedTemplate.c_linkedEntities.id",
+      "c_template",
     ],
     filter: { entityIds: ["aarons-store", "lucs-store"] },
     localization: { locales: ["en"] },
   },
 };
 
-function addDocumentPropsToTemplateData<T>(
-  config: Config<Props, RootProps>,
-  templateData: Data,
-  document: T
-) {
-  templateData.content.forEach((component) => {
-    const componentConfig = config.components[component.type];
-    if (componentConfig && componentConfig.fields["document"]) {
-      // If the document field is defined in the config, add it to the component props
-      component.props["document"] = document;
-    }
-  });
-}
+// function addDocumentPropsToTemplateData<T>(
+//   config: Config<Props, RootProps>,
+//   templateData: Data,
+//   document: T
+// ) {
+//   templateData.content.forEach((component) => {
+//     const componentConfig = config.components[component.type];
+//     if (componentConfig && componentConfig.fields["document"]) {
+//       // If the document field is defined in the config, add it to the component props
+//       component.props["document"] = document;
+//     }
+//   });
+// }
 
-export const transformProps = async (
-  data: TemplateRenderProps<LocationsType>
-) => {
-  const { document } = data;
+// export const transformProps = async (
+//   data: TemplateRenderProps<LocationsType>
+// ) => {
+//   const { document } = data;
 
-  if (!document.c_linkedTemplate?.[0].c_template?.url) {
-    return data;
-  }
+//   if (!document.c_linkedTemplate?.[0].c_template?.url) {
+//     return data;
+//   }
 
-  const jsonUrl = document.c_linkedTemplate?.[0].c_template?.url;
-  const response = await fetch(jsonUrl);
-  let templateData: Data = await response.json();
+//   const jsonUrl = document.c_linkedTemplate?.[0].c_template?.url;
+//   const response = await fetch(jsonUrl);
+//   let templateData: Data = await response.json();
 
-  addDocumentPropsToTemplateData<LocationsType>(conf, templateData, document);
+//   addDocumentPropsToTemplateData<LocationsType>(conf, templateData, document);
 
-  templateData = await resolveAllData(templateData, conf);
+//   templateData = await resolveAllData(templateData, conf);
 
-  // console.log("templateData", JSON.stringify(templateData, null, 2));
+//   // console.log("templateData", JSON.stringify(templateData, null, 2));
 
-  return {
-    ...data,
-    document: {
-      ...document,
-      templateData,
-    },
-  };
-};
+//   return {
+//     ...data,
+//     document: {
+//       ...document,
+//       templateData,
+//     },
+//   };
+// };
 
 export const getHeadConfig: GetHeadConfig<TemplateRenderProps> = ({
   relativePrefixToRoot,
@@ -104,8 +105,8 @@ export const getHeadConfig: GetHeadConfig<TemplateRenderProps> = ({
 };
 
 const Location: Template<TemplateRenderProps<LocationsType>> = (data) => {
-  const { templateData } = data.document;
-  return <Render config={puckConfig} data={templateData} />;
+  const { c_template } = data.document;
+  return <Render config={puckConfig} data={c_template} />;
 };
 
 export default Location;
