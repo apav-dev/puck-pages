@@ -8,10 +8,10 @@ type LinkedTemplateEntity = {
 };
 
 type State = {
-  entityId: string | null;
-  templateId: string | null;
-  entitySlug: string | null;
-  linkedTemplateEntity: LinkedTemplateEntity | null;
+  entityId: string | undefined;
+  templateId: string | undefined;
+  entitySlug: string | undefined;
+  linkedTemplateEntity: LinkedTemplateEntity | undefined;
   isResolvingData: boolean;
 };
 
@@ -25,10 +25,10 @@ type Action = {
 };
 
 export const useEditorStore = create<State & Action>((set) => ({
-  entityId: null,
-  templateId: null,
-  entitySlug: null,
-  linkedTemplateEntity: null,
+  entityId: undefined,
+  templateId: undefined,
+  entitySlug: undefined,
+  linkedTemplateEntity: undefined,
   isResolvingData: false,
   setEntityId: (entityId) => set({ entityId }),
   setTemplateId: (templateId) => set({ templateId }),

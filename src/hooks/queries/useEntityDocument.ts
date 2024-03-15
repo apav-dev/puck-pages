@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchEntityDocument } from "../../utils/api";
 
 type EntityDocument = {
-  templateId: string;
-  entityId: string;
+  templateId?: string;
+  entityId?: string;
 };
 
 const useEntityDocument = ({ templateId, entityId }: EntityDocument) => {

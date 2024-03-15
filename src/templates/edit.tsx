@@ -45,15 +45,16 @@ const Edit: Template<TemplateRenderProps> = (props) => {
       const linkedTemplateEntity =
         entityDocument?.response.document.c_linkedTemplate?.[0];
 
-      if (linkedTemplateEntity) {
+      if (linkedTemplateEntity && linkedTemplateEntity.c_template) {
         const template = JSON.parse(linkedTemplateEntity.c_template);
 
         setLinkedTemplateEntity({
           ...linkedTemplateEntity,
           template,
-          linkedEntityIds: linkedTemplateEntity.c_linkedEntities.map(
-            (linkedEntity) => linkedEntity.id
-          ),
+          linkedEntityIds:
+            linkedTemplateEntity.c_linkedEntities?.map(
+              (linkedEntity) => linkedEntity.id
+            ) ?? [],
         });
       }
     }

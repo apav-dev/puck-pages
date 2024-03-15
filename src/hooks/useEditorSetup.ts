@@ -12,12 +12,12 @@ export const useEditorSetup = () => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("entityId")) {
       const entityId = urlParams.get("entityId");
-      setEntityId(entityId);
+      setEntityId(entityId ?? undefined);
     }
 
     if (urlParams.has("templateId")) {
       const templateId = urlParams.get("templateId");
-      setTemplateId(templateId);
+      setTemplateId(templateId ?? undefined);
     }
   }, []);
 };

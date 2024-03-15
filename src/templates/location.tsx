@@ -44,7 +44,7 @@ export const transformProps = async (
 
   const linkedTemplateEntity = document.c_linkedTemplate?.[0];
 
-  if (!linkedTemplateEntity && !linkedTemplateEntity.c_template) {
+  if (!linkedTemplateEntity || !linkedTemplateEntity.c_template) {
     return data;
   }
 
