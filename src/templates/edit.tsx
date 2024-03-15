@@ -10,12 +10,10 @@ import {
 } from "@yext/pages";
 import { Editor } from "../puck/Editor";
 import { useEffect, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchEntityDocument } from "../utils/api";
-import { getEntityIdFromUrl } from "../utils/getEntityIdFromUrl";
 import { Toaster } from "../components/shadcn/Toaster";
-import { EditorContextProvider } from "../utils/useEditorContext";
-import { getTemplateIdFromUrl } from "../utils/getTemplateIdFromUrl";
+import { useEditorStore } from "../hooks/useEditorStore";
+import { useEditorSetup } from "../hooks/useEditorSetup";
+import useEntityDocument from "../hooks/queries/useEntityDocument";
 
 export const getPath: GetPath<TemplateProps> = () => {
   return "edit";
@@ -31,91 +29,40 @@ export const getHeadConfig: GetHeadConfig<
   };
 };
 
-export interface LinkedTemplateEntity {
-  id: string;
-  name: string;
-  template: any;
-  linkedEntityIds: string[];
-}
-
 const Edit: Template<TemplateRenderProps> = (props) => {
-  const hasMounted = useRef(false);
+  // const hasMounted = useRef(false);
+  useEditorSetup();
 
-  const [templateId, setTemplateId] = useState<string>("");
-  const [entityId, setEntityId] = useState<string>("");
-  const [entitySlug, setEntitySlug] = useState<string>("");
-  const [linkedTemplateEntity, setLinkedTemplateEntity] =
-    useState<LinkedTemplateEntity>();
-  const [isResolvingData, setIsResolvingData] = useState<boolean>(false);
+  const { entityId, templateId, setEntitySlug, setLinkedTemplateEntity } =
+    useEditorStore();
 
-  useEffect(() => {
-    setEntityId(getEntityIdFromUrl());
-    setTemplateId(getTemplateIdFromUrl());
-  }, []);
+  const { entityDocument } = useEntityDocument({ templateId, entityId });
 
   useEffect(() => {
-    if (hasMounted.current) {
-      const url = new URL(window.location.href);
-      url.searchParams.set("entityId", entityId);
-      window.history.replaceState({}, "", url.toString());
-    } else {
-      hasMounted.current = true;
-    }
-  }, [entityId]);
+    if (entityDocument) {
+      setEntitySlug(entityDocument?.response.document.slug);
 
-  const { data: entityDocument, isLoading } = useQuery({
-    queryKey: ["entityId", entityId],
-    retry: false,
-    queryFn: () => fetchEntityDocument(templateId, entityId),
-    enabled: entityId !== "" && templateId !== "",
-  });
+      const linkedTemplateEntity =
+        entityDocument?.response.document.c_linkedTemplate?.[0];
 
-  useEffect(() => {
-    const fetchTemplateData = async () => {
-      if (entityDocument) {
-        setEntitySlug(entityDocument.response.document.slug);
-
-        // TODO: Handle case where fields are missing
-        const linkedTemplateEntity =
-          entityDocument.response.document.c_linkedTemplate?.[0];
-
-        const jsonUrl = linkedTemplateEntity.c_template?.url;
-        const response = await fetch(jsonUrl);
-        const templateJson = await response.json();
+      if (linkedTemplateEntity) {
+        const template = JSON.parse(linkedTemplateEntity.c_template);
 
         setLinkedTemplateEntity({
           ...linkedTemplateEntity,
-          template: templateJson,
+          template,
           linkedEntityIds: linkedTemplateEntity.c_linkedEntities.map(
             (linkedEntity) => linkedEntity.id
           ),
         });
       }
-    };
-    fetchTemplateData();
+    }
   }, [entityDocument]);
 
-  // TODO: Render a different component if no entityId
-  // if (linkedTemplateEntity && entityId && templateId) {
   return (
     <>
-      <EditorContextProvider
-        value={{
-          entityId,
-          setEntityId,
-          templateId,
-          setTemplateId,
-          entitySlug,
-          setEntitySlug,
-          linkedTemplateEntity,
-          setLinkedTemplateEntity,
-          isResolvingData,
-          setIsResolvingData,
-        }}
-      >
-        <Editor />
-        <Toaster />
-      </EditorContextProvider>
+      <Editor />
+      <Toaster />
     </>
   );
 };

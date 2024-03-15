@@ -2,6 +2,7 @@ import {
   ContentApiCac,
   EntityContent,
   ImageAssetResponse,
+  SuggestionResponse,
   UnsplashResponse,
   UnsplashSearchParams,
   YextResponse,
@@ -100,4 +101,41 @@ export const updateStream = async (
 
   const body = await response.json();
   return body;
+};
+
+export const updateEntity = async (
+  entityId: string,
+  body: any
+): Promise<void> => {
+  const response = await fetch(`/api/entity/${entityId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+};
+
+export const createEntitySuggestion = async (
+  entityId: string,
+  body: any
+): Promise<YextResponse<SuggestionResponse>> => {
+  const resp = await fetch(`/api/entity/${entityId}/suggestion`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!resp.ok) {
+    throw new Error(resp.statusText);
+  }
+
+  const respJson = await resp.json();
+  return respJson;
 };

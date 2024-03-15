@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "../shadcn/Dropdown";
 import { Button } from "../shadcn/Button";
-import { useEditorContext } from "../../utils/useEditorContext";
+import { useEditorStore } from "../../hooks/useEditorStore";
 
 type HeaderProps = {
   templateName?: string;
@@ -14,7 +14,7 @@ type HeaderProps = {
 };
 
 const Header = ({ actions, templateName }: HeaderProps) => {
-  const { linkedTemplateEntity, setEntityId, entityId } = useEditorContext();
+  const { linkedTemplateEntity, setEntityId, entityId } = useEditorStore();
 
   const handleEntityIdChange = (entityId: string) => {
     setEntityId(entityId);

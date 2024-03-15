@@ -1,8 +1,4 @@
 import { PagesHttpRequest, PagesHttpResponse } from "@yext/pages/*";
-import {
-  createCloudflareObject,
-  deleteCloudflareObject,
-} from "../../../../utils/cloudflare";
 
 export default async function entity(
   request: PagesHttpRequest
@@ -69,15 +65,6 @@ const updateEntity = async (
     return { body: "Missing entity body", headers: {}, statusCode: 400 };
   }
 
-  if (entityBody.c_template) {
-    const publicFileUrl = await createCloudflareObject(
-      `template-${entityId}`,
-      entityBody.c_template
-    );
-
-    entityBody.c_template = { url: publicFileUrl };
-  }
-
   const mgmtApiResp = await fetch(
     `https://api.yextapis.com/v2/accounts/me/entities/${entityId}?api_key=${YEXT_PUBLIC_API_KEY}&v=20230901`,
     {
@@ -100,7 +87,6 @@ const updateEntity = async (
     };
   } else {
     console.log("Entity updated:", resp);
-    await deleteCloudflareObject(`template-${entityId}`);
     return {
       body: JSON.stringify(resp),
       headers: {},

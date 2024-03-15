@@ -1,30 +1,60 @@
-import { Button, Puck, resolveAllData, usePuck } from "@measured/puck";
+import { Button, Puck, usePuck } from "@measured/puck";
 import type { Data } from "@measured/puck";
 import config from "../config";
 import { useToast } from "../components/useToast";
 import { ToastAction } from "../components/shadcn/Toast";
 import { Header } from "../components/puck-overrides/Header";
-import { useEditorContext } from "../utils/useEditorContext";
-import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import useUpdateEntity from "../hooks/mutations/useUpdateEntity";
+import { useEditorStore } from "../hooks/useEditorStore";
+import useSuggestion from "../hooks/mutations/useSuggestion";
 
 export interface EditorProps {}
 
 export const Editor = ({}: EditorProps) => {
   const { toast } = useToast();
 
-  const { linkedTemplateEntity, entitySlug, isResolvingData } =
-    useEditorContext();
+  const handleSuggestionComplete = (suggestionId: string | undefined) => {
+    if (suggestionId) {
+      toast({
+        title: "Success",
+        description: `Your changes have been suggested.`,
+        action: (
+          <ToastAction altText="suggestion" className="hover:bg-slate-100">
+            <a
+              href={`https://www.yext.com/s/3828375/suggestions/edit?ids=${suggestionId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Suggestion
+            </a>
+          </ToastAction>
+        ),
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+      });
+    }
+  };
 
-  const handlePublish = async (data: Data) => {
-    const resp = await fetch(`/api/entity/${linkedTemplateEntity.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ c_template: data }),
+  const suggestionMutation = useSuggestion({
+    handleComplete: handleSuggestionComplete,
+  });
+
+  const handleSuggestion = async (data: Data) => {
+    const c_template = JSON.stringify(data);
+    suggestionMutation.mutate({
+      entityId: linkedTemplateEntity.id,
+      body: { c_template },
     });
-    if (resp.ok) {
+  };
+
+  const { linkedTemplateEntity, entitySlug, isResolvingData } =
+    useEditorStore();
+
+  const handlePublishComplete = (success: boolean) => {
+    if (success) {
       toast({
         title: "Success",
         description: `Your changes have been published.`,
@@ -51,49 +81,16 @@ export const Editor = ({}: EditorProps) => {
     }
   };
 
-  const handleCreateSuggestion = async (data: Data) => {
-    try {
-      const resp = await fetch(
-        `/api/entity/${linkedTemplateEntity.id}/suggestion`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ c_template: data }),
-        }
-      );
-      if (resp.ok) {
-        const respJson = await resp.json();
-        const suggestionId = respJson.response.id;
-        toast({
-          title: "Success",
-          description: `Your changes have been suggested.`,
-          action: (
-            <ToastAction altText="Try again" className="hover:bg-slate-100">
-              <a
-                href={`https://www.yext.com/s/3828375/suggestions/edit?ids=${suggestionId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View Suggestion
-              </a>
-            </ToastAction>
-          ),
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "Something went wrong",
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Error",
-        description: "Something went wrong",
-      });
-    }
+  const updateEntityMutation = useUpdateEntity({
+    handleComplete: handlePublishComplete,
+  });
+
+  const handlePublish = async (data: Data) => {
+    const c_template = JSON.stringify(data);
+    updateEntityMutation.mutate({
+      entityId: linkedTemplateEntity.id,
+      body: { c_template },
+    });
   };
 
   return (
@@ -110,7 +107,6 @@ export const Editor = ({}: EditorProps) => {
           }
           // data={{ content: [], root: { props: { title: "Title" } }, zones: {} }}
           onPublish={handlePublish}
-          // plugins={[ModifyStreamPlugin]}
           overrides={{
             header: ({ actions }) => (
               <Header
@@ -125,7 +121,7 @@ export const Editor = ({}: EditorProps) => {
                   {children}
                   <div>
                     <Button
-                      onClick={() => handleCreateSuggestion(appState.data)}
+                      onClick={() => handleSuggestion(appState.data)}
                       variant="secondary"
                     >
                       Create Suggestion
@@ -134,7 +130,6 @@ export const Editor = ({}: EditorProps) => {
                 </>
               );
             },
-            // preview: ({ children }) => <CustomPreview children={children} />,
           }}
         />
       ) : (
@@ -142,46 +137,4 @@ export const Editor = ({}: EditorProps) => {
       )}
     </>
   );
-};
-
-const CustomPreview = ({ children }: { children: React.ReactNode }) => {
-  const { dispatch } = usePuck();
-
-  const { linkedTemplateEntity, entityId } = useEditorContext();
-
-  useEffect(() => {
-    console.log("linkedTemplateEntity", linkedTemplateEntity);
-  }, [linkedTemplateEntity]);
-
-  const { data: resolvedTemplateData, isPending: resolvingData } = useQuery({
-    queryKey: ["resolveData", linkedTemplateEntity.template],
-    queryFn: () =>
-      resolveAllData(
-        linkedTemplateEntity?.template || {
-          content: [],
-          root: { props: { title: "Title" } },
-          zones: {},
-        },
-        config,
-        (item) => {
-          console.log(console.log(item));
-        }
-      ),
-    enabled: entityId !== "",
-  });
-
-  useEffect(() => {
-    if (resolvedTemplateData) {
-      dispatch({
-        type: "setData",
-        data: resolvedTemplateData || {
-          content: [],
-          root: { props: { title: "Title" } },
-          zones: {},
-        },
-      });
-    }
-  }, [resolvedTemplateData]);
-
-  return <div>{children}</div>;
 };

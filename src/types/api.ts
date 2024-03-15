@@ -12,6 +12,10 @@ export type EntityContent = {
   document: LocationsType;
 };
 
+export type SuggestionResponse = {
+  id: string;
+};
+
 export type LocationContent = {
   docs: {
     $key: {
