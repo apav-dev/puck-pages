@@ -3,8 +3,9 @@ import { PagesHttpRequest, PagesHttpResponse } from "@yext/pages/*";
 export default async function streams(
   request: PagesHttpRequest
 ): Promise<PagesHttpResponse> {
-  const { method, pathParams, body } = request;
-  const entityId = pathParams.entityId;
+  const { method, queryParams, body } = request;
+  const entityId = queryParams.entityId;
+  console.log("queryParams", queryParams);
   if (!entityId) {
     return { body: "Missing entityId", headers: {}, statusCode: 400 };
   }

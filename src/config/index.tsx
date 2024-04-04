@@ -10,9 +10,11 @@ import { Email, EmailProps } from "./blocks/Email";
 import { PhoneNumber, PhoneNumberProps } from "./blocks/PhoneNumber";
 import { AddressProps, Address } from "./blocks/Address";
 import { HeroProps, Hero } from "./blocks/Hero";
+import { AdvisorHeroProps, AdvisorHero } from "./blocks/AdvisorHero";
 
 export type Props = {
   Hero: HeroProps;
+  AdvisorHero: AdvisorHeroProps;
   // Gallery: GalleryProps;
   // Columns: ColumnsProps;
   // Text: TextProps;
@@ -29,6 +31,7 @@ export const conf: Config<Props, RootProps> = {
   },
   components: {
     Hero,
+    AdvisorHero,
     // Gallery,
     // Columns,
     // Text,

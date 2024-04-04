@@ -9,11 +9,12 @@ import {
   TemplateRenderProps,
 } from "@yext/pages";
 import { Editor } from "../puck/Editor";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { Toaster } from "../components/shadcn/Toaster";
 import { useEditorStore } from "../hooks/useEditorStore";
 import { useEditorSetup } from "../hooks/useEditorSetup";
 import useEntityDocument from "../hooks/queries/useEntityDocument";
+import { DocumentProvider } from "../hooks/useDocument";
 
 export const getPath: GetPath<TemplateProps> = () => {
   return "edit";
@@ -29,8 +30,7 @@ export const getHeadConfig: GetHeadConfig<
   };
 };
 
-const Edit: Template<TemplateRenderProps> = (props) => {
-  // const hasMounted = useRef(false);
+const Edit: Template<TemplateRenderProps> = () => {
   useEditorSetup();
 
   const { entityId, templateId, setEntitySlug, setLinkedTemplateEntity } =
@@ -61,10 +61,10 @@ const Edit: Template<TemplateRenderProps> = (props) => {
   }, [entityDocument]);
 
   return (
-    <>
+    <DocumentProvider value={entityDocument?.response.document}>
       <Editor />
       <Toaster />
-    </>
+    </DocumentProvider>
   );
 };
 

@@ -13,6 +13,9 @@ export interface EditorProps {}
 export const Editor = ({}: EditorProps) => {
   const { toast } = useToast();
 
+  const { linkedTemplateEntity, entitySlug, isResolvingData } =
+    useEditorStore();
+
   const handleSuggestionComplete = (suggestionId: string | undefined) => {
     if (suggestionId) {
       toast({
@@ -49,9 +52,6 @@ export const Editor = ({}: EditorProps) => {
       body: { c_template },
     });
   };
-
-  const { linkedTemplateEntity, entitySlug, isResolvingData } =
-    useEditorStore();
 
   const handlePublishComplete = (success: boolean) => {
     if (success) {

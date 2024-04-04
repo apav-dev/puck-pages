@@ -7,8 +7,9 @@ import {
 } from "@yext/pages";
 import "../index.css";
 import { Locations as LocationsType } from "../types/autogen";
-import { Render } from "@measured/puck";
+import { Data, Render } from "@measured/puck";
 import puckConfig from "../config";
+import { DocumentProvider } from "../hooks/useDocument";
 
 export const config: TemplateConfig = {
   stream: {
@@ -52,7 +53,7 @@ export const transformProps = async (
   }
 
   try {
-    const visualTemplate = JSON.parse(linkedTemplateEntity.c_template);
+    const visualTemplate: Data = JSON.parse(linkedTemplateEntity.c_template);
     console.log("Successfully parsed visualTemplate");
     return {
       ...data,
@@ -93,9 +94,14 @@ export const getPath = (data: TemplateRenderProps<LocationsType>) => {
 };
 
 const Location: Template<TemplateRenderProps<LocationsType>> = (data) => {
-  const { visualTemplate } = data.document;
+  const { document } = data;
+  const { visualTemplate } = document;
 
-  return <Render config={puckConfig} data={visualTemplate} />;
+  return (
+    <DocumentProvider value={document}>
+      <Render config={puckConfig} data={visualTemplate} />
+    </DocumentProvider>
+  );
 };
 
 export default Location;

@@ -7,7 +7,16 @@ type Update = {
 
 const useUpdateEntity = ({ handleComplete }: Update) => {
   const updateEntityMutation = useMutation({
-    mutationFn: async ({ entityId, body }: { entityId: string; body: any }) => {
+    mutationFn: async ({
+      entityId,
+      body,
+    }: {
+      entityId?: string;
+      body: any;
+    }) => {
+      if (!entityId) {
+        throw new Error("entityId is required");
+      }
       await updateEntity(entityId, body);
     },
     mutationKey: ["updateEntity"],
