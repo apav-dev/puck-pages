@@ -13,6 +13,7 @@ type State = {
   entitySlug: string | undefined;
   linkedTemplateEntity: LinkedTemplateEntity | undefined;
   isResolvingData: boolean;
+  templateConfig: any;
 };
 
 type Action = {
@@ -22,6 +23,7 @@ type Action = {
   setLinkedTemplateEntity: (
     linkedTemplateEntity: State["linkedTemplateEntity"]
   ) => void;
+  setTemplateConfig: (templateConfig: State["templateConfig"]) => void;
 };
 
 export const useEditorStore = create<State & Action>((set) => ({
@@ -35,4 +37,6 @@ export const useEditorStore = create<State & Action>((set) => ({
   setEntitySlug: (entitySlug) => set({ entitySlug }),
   setLinkedTemplateEntity: (linkedTemplateEntity) =>
     set({ linkedTemplateEntity }),
+  templateConfig: undefined,
+  setTemplateConfig: (templateConfig) => set({ templateConfig }),
 }));

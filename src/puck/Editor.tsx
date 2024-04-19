@@ -13,7 +13,7 @@ export interface EditorProps {}
 export const Editor = ({}: EditorProps) => {
   const { toast } = useToast();
 
-  const { linkedTemplateEntity, entitySlug, isResolvingData } =
+  const { linkedTemplateEntity, entitySlug, isResolvingData, templateConfig } =
     useEditorStore();
 
   const handleSuggestionComplete = (suggestionId: string | undefined) => {
@@ -95,9 +95,9 @@ export const Editor = ({}: EditorProps) => {
 
   return (
     <>
-      {linkedTemplateEntity ? (
+      {linkedTemplateEntity && templateConfig ? (
         <Puck
-          config={config}
+          config={templateConfig}
           data={
             linkedTemplateEntity?.template ?? {
               content: [],

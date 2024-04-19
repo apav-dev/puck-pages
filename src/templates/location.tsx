@@ -8,7 +8,7 @@ import {
 import "../index.css";
 import { Locations as LocationsType } from "../types/autogen";
 import { Data, Render } from "@measured/puck";
-import puckConfig from "../config";
+import { locationConfig } from "../config";
 import { DocumentProvider } from "../hooks/useDocument";
 
 export const config: TemplateConfig = {
@@ -99,7 +99,7 @@ const Location: Template<TemplateRenderProps<LocationsType>> = (data) => {
 
   return (
     <DocumentProvider value={document}>
-      <Render config={puckConfig} data={visualTemplate} />
+      <Render config={locationConfig} data={visualTemplate} />
     </DocumentProvider>
   );
 };

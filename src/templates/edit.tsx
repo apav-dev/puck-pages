@@ -15,6 +15,7 @@ import { useEditorStore } from "../hooks/useEditorStore";
 import { useEditorSetup } from "../hooks/useEditorSetup";
 import useEntityDocument from "../hooks/queries/useEntityDocument";
 import { DocumentProvider } from "../hooks/useDocument";
+import { financialProConfig, locationConfig } from "../config";
 
 export const getPath: GetPath<TemplateProps> = () => {
   return "edit";
@@ -33,13 +34,28 @@ export const getHeadConfig: GetHeadConfig<
 const Edit: Template<TemplateRenderProps> = () => {
   useEditorSetup();
 
-  const { entityId, templateId, setEntitySlug, setLinkedTemplateEntity } =
-    useEditorStore();
+  const {
+    entityId,
+    templateId,
+    setEntitySlug,
+    setLinkedTemplateEntity,
+    templateConfig,
+    setTemplateConfig,
+  } = useEditorStore();
 
   const { entityDocument } = useEntityDocument({ templateId, entityId });
 
   useEffect(() => {
+    if (templateId === "financial-pro") {
+      setTemplateConfig(financialProConfig);
+    } else if (templateId === "location") {
+      setTemplateConfig(locationConfig);
+    }
+  }, [templateId]);
+
+  useEffect(() => {
     if (entityDocument) {
+      console.log("templateConfig", templateConfig);
       setEntitySlug(entityDocument?.response.document.slug);
 
       const linkedTemplateEntity =
