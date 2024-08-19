@@ -4,6 +4,7 @@ import { Config, Data } from "@measured/puck";
 import Root, { RootProps } from "./root";
 import { Hero } from "./blocks/Hero";
 import { AdvisorHeroProps, AdvisorHero } from "./blocks/AdvisorHero";
+import { AddressProps, Address } from "./blocks/Address";
 
 export type FinancialProProps = {
   AdvisorHero: AdvisorHeroProps;
@@ -11,6 +12,7 @@ export type FinancialProProps = {
 
 export type LocationProps = {
   Hero: AdvisorHeroProps;
+  Address: AddressProps;
 };
 
 export const financialProConfig: Config<FinancialProProps, RootProps> = {
@@ -28,6 +30,7 @@ export const locationConfig: Config<LocationProps, RootProps> = {
   },
   components: {
     Hero,
+    Address,
   },
 };
 

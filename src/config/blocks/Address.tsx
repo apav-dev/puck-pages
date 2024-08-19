@@ -6,7 +6,9 @@ import {
   AddressType,
 } from "@yext/pages-components";
 import { SelectorField } from "../../components/fields/SelectorField";
-import { useTemplateData } from "../../utils/useTemplateData";
+import { useDocument } from "../../hooks/useDocument";
+import { Locations } from "../../types/autogen";
+// import { useTemplateData } from "../../utils/useTemplateData";
 
 export interface AddressProps {
   addressField?: string;
@@ -26,7 +28,7 @@ export interface AddressProps {
 export const Address: ComponentConfig<AddressProps> = {
   fields: {
     addressField: {
-      label: "Hours",
+      label: "Address",
       type: "custom",
       render: ({ field, onChange, value, name }) => {
         const entityId = getEntityIdFromUrl();
@@ -63,6 +65,7 @@ export const Address: ComponentConfig<AddressProps> = {
     countryCode: "US",
   },
   resolveData: async ({ props }, { changed }) => {
+    console.log("resolveData", props, changed);
     const data = {
       props: { ...props },
       readOnly: {},
@@ -111,7 +114,7 @@ export const Address: ComponentConfig<AddressProps> = {
     localizedRegionName,
     localizedCountryName,
   }) => {
-    const { document } = useTemplateData();
+    const document = useDocument<Locations>();
 
     return (
       <PagesAddressCmpt
